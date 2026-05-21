@@ -194,9 +194,9 @@ Full pinned versions available in `women_autonomy_classifier/requirements.txt`.
 
 ## Author
 
-**Enow Brenda** — Master's in Statistics
+**Enow Brenda** — Master's in Data science
 *Academic project — Statistics and Regression, 2025–2026*
 
 ---
 
-> **Note:** This project is intended for academic demonstration purposes. The model artifacts are version-sensitive — if retraining, ensure the scikit-learn version matches the one specified in `requirements.txt`.
+> **Note:** This project is intended for academic demonstration purposes. The model artifacts are version-sensitive . if retraining, ensure the scikit-learn version matches the one specified in `requirements.txt`.

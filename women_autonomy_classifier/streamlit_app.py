@@ -122,7 +122,7 @@ TRANSLATIONS = {
         "media_any": "Exposed to Any Media",
         "anc_group": "ANC Visits",
         "perf_title": "Model Performance",
-        "perf_subtitle": "Test set evaluation metrics for LightGBM — the best performing classifier.",
+        "perf_subtitle": "Test set evaluation metrics for LightGBM the best performing classifier.",
         "perf_accuracy": "Accuracy",
         "perf_f1": "F1 Score",
         "perf_precision": "Precision",
@@ -143,8 +143,8 @@ TRANSLATIONS = {
             "women's decision-making autonomy in family planning (FP) in Cameroon, "
             "using data from the Demographic and Health Survey (DHS). "
             "The goal is to predict whether FP decisions are driven by the woman alone, "
-            "the partner alone, or jointly by both — using 18 sociodemographic features. "
-            "Seven machine learning classifiers were compared under 5-fold cross-validation, "
+            "the partner alone, or jointly by both using 18 sociodemographic features. "
+            "Seven machine learning classifiers were compared under 10-fold cross-validation, "
             "SMOTE class balancing, and RFE feature selection. LightGBM emerged as the best model."
         ),
         "about_dataset": "Dataset",
@@ -163,10 +163,49 @@ TRANSLATIONS = {
         "about_pipeline": "ML Pipeline",
         "husband_desired_children": "Husband Desired Preference for Children",
         "about_disclaimer": (
-            "Academic disclaimer — This tool is intended for research purposes only "
+            "Academic disclaimer : This tool is intended for research purposes only "
             "and should not be used for clinical or policy decisions without further validation."
         ),
         "no_model_warn": "No model file found. Place best_model.pkl next to app.py. Showing demo probabilities.",
+        "EDU_OPTIONS" : {0: "No Education", 1: "Primary", 2: "Secondary", 3: "Higher"},
+        "HUSBAND_DESIRED" : {1: "Same as Woman", 2: "Wants more", 3: "Wants fewer", 8: "Don't Know"},
+        "WEALTH_OPTIONS" : {1: "Poorest", 2: "Poorer", 3: "Middle", 4: "Richer", 5: "Richest"},
+        "RESIDENCE_OPT" : {1: "Urban", 2: "Rural"},
+        "RELIGION_OPT" : {1: "Catholic", 2: "Protestant", 3: "Muslim", 4: "Animist", 5: "Other Christian", 6: "No Religion"},
+        "MARRIAGE_TYPE" : {1: "Monogamous", 2: "Polygamous"},
+        "MARITAL_OPT" : {1: "Formally married", 2: "Cohabiting"},
+        "FP_YN" : {0: "No", 1: "Yes"},
+        "CURRENT_METHOD_OPT" : {1: 'Pill',
+                                2: 'IUD',
+                                3: 'Injections',
+                                4: 'Diaphragm',
+                                5: 'Male condom',
+                                6: 'Female sterilization',
+                                7: 'Male sterilization',
+                                8: 'Periodic abstinence',
+                                9: 'Withdrawal',
+                                10: 'Other traditional',
+                                11: 'Implants/Norplant',
+                                12: 'Prolonged abstinence',
+                                13: 'Lactational amenorrhea (LAM)',
+                                14: 'Female condom',
+                                15: 'Foam or jelly',
+                                16: 'Emergency contraception',
+                                17: 'Other modern method',
+                                18: 'Standard days method (SDM)',
+                                19: 'Specific method 1',
+                                20: 'Specific method 2'}    ,
+        "FERTILITY_OPT"  :{1: "Wants More", 2: "No More", 3: "Undecided"},
+        "WORKING_OPT"    : {0: "No", 1: "Yes"},
+        "FIELDWKR_OPT"   : {0: "No", 1: "Yes"},
+        "FACILITY_OPT"   : {0: "No", 1: "Yes", 8: "Didn't visit facility"},
+        "MEDIA_OPT"      : {0: "No", 1: "Yes"},
+        "ANC_OPT"        : {0: "None", 1: "1–3 visits", 2: "4+ visits", 9: "No pregnancy in last 5 years"},
+        "REGION_OPT"     : {
+            1: "Adamaoua", 2: "Center (excl. Yaounde)", 3: "East", 4: "Far-North",
+            5: "Littoral (excl. Douala)", 6: "North", 7: "North-West", 8: "West",
+            9: "South", 10: "South-West", 11: "Douala", 12: "Yaounde",
+        }
     },
     "fr": {
         "app_title": "Autonomie Décisionnelle PF",
@@ -211,7 +250,7 @@ TRANSLATIONS = {
         "media_any": "Exposition aux médias",
         "anc_group": "Visites CPN",
         "perf_title": "Performance du Modèle",
-        "perf_subtitle": "Métriques d'évaluation sur l'ensemble de test — LightGBM, meilleur classificateur.",
+        "perf_subtitle": "Métriques d'évaluation sur l'ensemble de test LightGBM, meilleur classificateur.",
         "perf_accuracy": "Exactitude",
         "perf_f1": "Score F1",
         "perf_precision": "Précision",
@@ -232,8 +271,8 @@ TRANSLATIONS = {
             "l'autonomie décisionnelle des femmes en planification familiale (PF) au Cameroun, "
             "à partir des données de l'Enquête Démographique et de Santé (EDS). "
             "L'objectif est de prédire si les décisions PF sont prises par la femme seule, "
-            "le partenaire seul, ou conjointement — en utilisant 18 variables sociodémographiques. "
-            "Sept classificateurs ont été comparés avec validation croisée à 5 plis, "
+            "le partenaire seul, ou conjointement en utilisant 18 variables sociodémographiques. "
+            "Sept classificateurs ont été comparés avec validation croisée à 10 plis, "
             "équilibrage SMOTE et sélection RFE. LightGBM est le meilleur modèle."
         ),
         "about_dataset": "Données",
@@ -251,10 +290,60 @@ TRANSLATIONS = {
         "about_pipeline": "Pipeline ML",
         "husband_desired_children": "Préférence du mari pour les enfants",
         "about_disclaimer": (
-            "Avertissement académique — Cet outil est destiné à la recherche uniquement "
+            "Avertissement académique : Cet outil est destiné à la recherche uniquement "
             "et ne doit pas être utilisé à des fins cliniques ou politiques sans validation supplémentaire."
         ),
         "no_model_warn": "Fichier modèle introuvable. Placez best_model.pkl à côté de app.py. Probabilités de démonstration affichées.",
+        "EDU_OPTIONS" : {0: "Aucune instruction", 1: "Primaire", 2: "Secondaire", 3: "Supérieur"},
+        "HUSBAND_DESIRED" : {1: "Même que la femme", 2: "En veut plus", 3: "En veut moins", 8: "Ne sait pas"},
+        "WEALTH_OPTIONS" : {1: "Le plus pauvre", 2: "Pauvre", 3: "Moyen", 4: "Riche", 5: "Le plus riche"},
+        "RESIDENCE_OPT" : {1: "Urbain", 2: "Rural"},
+        "RELIGION_OPT" : {1: "Catholique", 2: "Protestant", 3: "Musulman", 4: "Animiste", 5: "Autre chrétien", 6: "Sans religion"},
+        "MARRIAGE_TYPE" : {1: "Monogame", 2: "Polygame"},
+        "MARITAL_OPT" : {1: "Marié(e) officiellement", 2: "En union libre"},
+        "FP_YN" : {0: "Non", 1: "Oui"},
+        "CURRENT_METHOD_OPT" : {
+            1:  "Pilule",
+            2:  "DIU / Stérilet",
+            3:  "Injections",
+            4:  "Diaphragme",
+            5:  "Préservatif masculin",
+            6:  "Stérilisation féminine",
+            7:  "Stérilisation masculine",
+            8:  "Abstinence périodique",
+            9:  "Retrait",
+            10: "Autre méthode traditionnelle",
+            11: "Implants / Norplant",
+            12: "Abstinence prolongée",
+            13: "Méthode de l'allaitement maternel (MAMA)",
+            14: "Préservatif féminin",
+            15: "Mousse ou gelée spermicide",
+            16: "Contraception d'urgence",
+            17: "Autre méthode moderne",
+            18: "Méthode des jours fixes (MJF)",
+            19: "Méthode spécifique 1",
+            20: "Méthode spécifique 2",
+        },
+        "FERTILITY_OPT"  : {1: "Veut plus d'enfants", 2: "Ne veut plus", 3: "Indécis(e)"},
+        "WORKING_OPT"    : {0: "Non", 1: "Oui"},
+        "FIELDWKR_OPT"   : {0: "Non", 1: "Oui"},
+        "FACILITY_OPT"   : {0: "Non", 1: "Oui", 8: "N'a pas visité de structure"},
+        "MEDIA_OPT"      : {0: "Non", 1: "Oui"},
+        "ANC_OPT"        : {0: "Aucune", 1: "1–3 visites", 2: "4 visites ou plus", 9: "Pas de grossesse dans les 5 dernières années"},
+        "REGION_OPT"     : {
+            1:  "Adamaoua",
+            2:  "Centre (hors Yaoundé)",
+            3:  "Est",
+            4:  "Extrême-Nord",
+            5:  "Littoral (hors Douala)",
+            6:  "Nord",
+            7:  "Nord-Ouest",
+            8:  "Ouest",
+            9:  "Sud",
+            10: "Sud-Ouest",
+            11: "Douala",
+            12: "Yaoundé",
+        },
     },
 }
 
@@ -690,38 +779,38 @@ def page_predict(T, model):
         age          = r1.number_input(T["age"], 15, 49, 28, key="age")
         num_children = r2.number_input(T["num_children"], 0, 15, 2, key="nc")
         r3, r4 = st.columns(2)
-        edu_w  = r3.selectbox(T["edu_woman"],   list(EDU_OPTIONS.keys()),   format_func=lambda x: EDU_OPTIONS[x], key="edw")
-        edu_h  = r4.selectbox(T["edu_husband"], list(EDU_OPTIONS.keys()),   format_func=lambda x: EDU_OPTIONS[x], key="edh")
+        edu_w  = r3.selectbox(T["edu_woman"],   list(T["EDU_OPTIONS"].keys()),   format_func=lambda x: T["EDU_OPTIONS"][x], key="edw")
+        edu_h  = r4.selectbox(T["edu_husband"], list(T["EDU_OPTIONS"].keys()),   format_func=lambda x: T["EDU_OPTIONS"][x], key="edh")
         r5, r6 = st.columns(2)
-        religion  = r5.selectbox(T["religion"],     list(RELIGION_OPT.keys()), format_func=lambda x: RELIGION_OPT[x], key="rel")
-        marital_s = r6.selectbox(T["marital_status"], list(MARITAL_OPT.keys()), format_func=lambda x: MARITAL_OPT[x], key="mar")
-        marriage_t = st.selectbox(T["marriage_type"], list(MARRIAGE_TYPE.keys()), format_func=lambda x: MARRIAGE_TYPE[x], key="mart")
+        religion  = r5.selectbox(T["religion"],     list(T["RELIGION_OPT"].keys()), format_func=lambda x: T["RELIGION_OPT"][x], key="rel")
+        marital_s = r6.selectbox(T["marital_status"], list(T["MARITAL_OPT"].keys()), format_func=lambda x: T["MARITAL_OPT"][x], key="mar")
+        marriage_t = st.selectbox(T["marriage_type"], list(T["MARRIAGE_TYPE"].keys()), format_func=lambda x: T["MARRIAGE_TYPE"][x], key="mart")
         st.markdown('</div>', unsafe_allow_html=True)
 
         st.markdown(f'<div class="card"><div class="card-title">{icon("building")} {T["pred_socio"]}</div>', unsafe_allow_html=True)
         r1, r2 = st.columns(2)
-        wealth    = r1.selectbox(T["wealth"],    list(WEALTH_OPTIONS.keys()), format_func=lambda x: WEALTH_OPTIONS[x], key="wlth")
-        residence = r2.selectbox(T["residence"], list(RESIDENCE_OPT.keys()),  format_func=lambda x: RESIDENCE_OPT[x], key="res")
-        region    = st.selectbox(T["region"],    list(REGION_OPT.keys()),     format_func=lambda x: REGION_OPT[x], key="reg")
+        wealth    = r1.selectbox(T["wealth"],    list(T["WEALTH_OPTIONS"].keys()), format_func=lambda x: T["WEALTH_OPTIONS"][x], key="wlth")
+        residence = r2.selectbox(T["residence"], list(T["RESIDENCE_OPT"].keys()),  format_func=lambda x: T["RESIDENCE_OPT"][x], key="res")
+        region    = st.selectbox(T["region"],    list(T["REGION_OPT"].keys()),     format_func=lambda x: T["REGION_OPT"][x], key="reg")
         r3, r4 = st.columns(2)
-        woman_w   = r3.selectbox(T["woman_working"],   [0, 1],    format_func=lambda x: FP_YN[x], key="ww")
-        husband_w = r4.selectbox(T["husband_working"], [0, 1], format_func=lambda x: WORKING_OPT[x], key="hw")
+        woman_w   = r3.selectbox(T["woman_working"],   [0, 1],    format_func=lambda x: T["FP_YN"][x], key="ww")
+        husband_w = r4.selectbox(T["husband_working"], [0, 1], format_func=lambda x: T["WORKING_OPT"][x], key="hw")
         st.markdown('</div>', unsafe_allow_html=True)
 
     with col2:
         st.markdown(f'<div class="card"><div class="card-title">{icon("heart")} {T["pred_fp"]}</div>', unsafe_allow_html=True)
         r1, r2 = st.columns(2)
-        current_m   = r1.selectbox(T["current_method"],      [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20],    format_func=lambda x: CURRENT_METHOD_OPT[x], key="cm")
-        fertility_p = r2.selectbox(T["fertility_preference"], list(FERTILITY_OPT.keys()), format_func=lambda x: FERTILITY_OPT[x], key="fp")
-        anc         = r1.selectbox(T["anc_group"], [0, 1, 2, 9], format_func=lambda x: ANC_OPT[x], key="anc")
-        husband_desired = r2.selectbox(T["husband_desired_children"], list(HUSBAND_DESIRED.keys()), format_func=lambda x: HUSBAND_DESIRED[x], key="hd")
+        current_m   = r1.selectbox(T["current_method"],      [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20],    format_func=lambda x: T["CURRENT_METHOD_OPT"][x], key="cm")
+        fertility_p = r2.selectbox(T["fertility_preference"], list(T["FERTILITY_OPT"].keys()), format_func=lambda x: T["FERTILITY_OPT"][x], key="fp")
+        anc         = r1.selectbox(T["anc_group"], [0, 1, 2, 9], format_func=lambda x: T["ANC_OPT"][x], key="anc")
+        husband_desired = r2.selectbox(T["husband_desired_children"], list(T["HUSBAND_DESIRED"].keys()), format_func=lambda x: T["HUSBAND_DESIRED"][x], key="hd")
         st.markdown('</div>', unsafe_allow_html=True)
 
         st.markdown(f'<div class="card"><div class="card-title">{icon("media")} {T["pred_media"]}</div>', unsafe_allow_html=True)
         r1, r2 = st.columns(2)
-        fieldworker = r1.selectbox(T["fieldworker_fp"], [0, 1], format_func=lambda x: FIELDWKR_OPT[x], key="fw")
-        facility    = r2.selectbox(T["facility_fp"],    [0, 1, 8], format_func=lambda x: FACILITY_OPT[x], key="fac")
-        media       = st.selectbox(T["media_any"],      [0, 1],    format_func=lambda x: MEDIA_OPT[x], key="med")
+        fieldworker = r1.selectbox(T["fieldworker_fp"], [0, 1], format_func=lambda x: T["FIELDWKR_OPT"][x], key="fw")
+        facility    = r2.selectbox(T["facility_fp"],    [0, 1, 8], format_func=lambda x: T["FACILITY_OPT"][x], key="fac")
+        media       = st.selectbox(T["media_any"],      [0, 1],    format_func=lambda x: T["MEDIA_OPT"][x], key="med")
         st.markdown('</div>', unsafe_allow_html=True)
 
         # Predict button
