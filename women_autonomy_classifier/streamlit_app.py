@@ -757,6 +757,8 @@ def page_predict(T, model):
                     print(f"PREDICTION ERROR: {e}") 
                     probabilities = np.array([0.33, 0.33, 0.34])
                     predicted_class = 2
+                    st.exception(e)
+                    st.stop()
 
             st.session_state.last_proba  = list(probabilities)
             st.session_state.last_pred   = predicted_class
