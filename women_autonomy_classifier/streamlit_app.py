@@ -754,6 +754,7 @@ def page_predict(T, model):
                     probabilities   = model.predict_proba(df_in)[0]
                 except Exception as e:
                     st.error(f"Prediction error: {e}")
+                    print(f"PREDICTION ERROR: {e}") 
                     probabilities = np.array([0.33, 0.33, 0.34])
                     predicted_class = 2
 
