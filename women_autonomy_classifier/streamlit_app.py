@@ -1,7 +1,3 @@
-"""
-Women's Family Planning Decision Autonomy Predictor
-Dark-mode only | Orange accent | Professional dashboard
-"""
 
 import streamlit as st
 import pandas as pd
@@ -10,6 +6,7 @@ import joblib
 import json
 import plotly.graph_objects as go
 import os
+import base64
 
 # ─── PAGE CONFIG ─────────────────────────────────────────────────────────────
 st.set_page_config(
@@ -18,6 +15,68 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded",
 )
+
+# ─── NAV CONFIG ───────────────────────────────────────────────────────────────
+NAV_ITEMS = [
+    # (page_key,    label_en,         label_fr,                  icon_svg)
+    ("predict",     "Predict",        "Prédire",
+     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="17" height="17"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>'),
+ 
+    ("performance", "Model Performance", "Performance",
+     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="17" height="17"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 17V13M12 17V9M16 17V12"/></svg>'),
+ 
+    ("features",    "Feature Importance", "Importance des Variables",
+     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="17" height="17"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>'),
+ 
+    ("about",       "About",          "À propos",
+     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="17" height="17"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="8"/><path d="M12 12v4"/></svg>'),
+]
+ 
+ 
+# ─── EXTRA CSS (appended once, add to inject_css if you prefer) ───────────────
+NAV_CSS = """
+<style>
+/* ── sidebar nav links ───────────────────────────────── */
+.sb-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 0.55rem 0.85rem;
+  border-radius: 9px;
+  border: 1px solid transparent;
+  margin-bottom: 5px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--sub);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  background: none;
+  text-decoration: none !important;
+  width: 100%;
+  box-sizing: border-box;
+  font-family: var(--font);
+  line-height: 1;
+}
+.sb-nav-link:hover {
+  color: var(--text) !important;
+  background: var(--bg3) !important;
+  text-decoration: none !important;
+}
+.sb-nav-link.active {
+  color: var(--orange) !important;
+  background: rgba(249,115,22,0.12) !important;
+  border-color: rgba(249,115,22,0.28) !important;
+}
+.sb-nav-link svg {
+  flex-shrink: 0;
+  color: inherit;
+  stroke: currentColor;
+}
+ 
+/* hide the real (invisible) Streamlit buttons used as click targets */
+div[data-nav-hidden] { display: none !important; }
+</style>
+"""
 
 # ─── TRANSLATIONS ─────────────────────────────────────────────────────────────
 TRANSLATIONS = {
@@ -219,15 +278,15 @@ NUMERICAL_FEATURES   = ["age", "num_children"]
 CATEGORICAL_FEATURES = [
     "residence", "edu_woman", "religion", "region", "marital_status",
     "wealth", "marriage_type", "woman_working", "fertility_preference",
-    "current_method", "husband_working", "husband_desired_children",
+    "current_method", "husband_desired_children",
     "anc_group", "fieldworker_fp", "facility_fp", "media_any",
 ]
 
 # ─── UNSPLASH IMAGE URLS (free-to-use, no auth needed) ───────────────────────
-IMG_HERO        = "https://images.unsplash.com/photo-1527613426441-4da17471b66d?w=1400&q=80"
+IMG_HERO        = "https://static.wixstatic.com/media/038af1_c222df03e4bc408cad78ba79e2432e72~mv2.jpeg/v1/fill/w_1000,h_560,al_c,q_85,usm_0.66_1.00_0.01/038af1_c222df03e4bc408cad78ba79e2432e72~mv2.jpeg"
 IMG_PREDICT_BG  = "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=900&q=75"
 IMG_ABOUT_1     = "https://cameroon.unfpa.org/sites/default/files/topics/pf_.jpeg"
-IMG_ABOUT_2     = "https://res-console.cloudinary.com/dntyjc31a/thumbnails/transform/v1/image/upload/Y19maWxsLGhfMjAwLHdfMjAw/v1/YnJlbmRhX3A4aTZwdA==/template_primary"
+IMG_ABOUT_2     = "brenda.jpg"
 
 # ─── GLOBAL CSS (dark-only, orange accent) ───────────────────────────────────
 def inject_css():
@@ -263,68 +322,60 @@ html, body, [class*="css"], .stApp { background-color: var(--bg); font-family: v
   border-right: 1px solid var(--border) !important;
 }
 [data-testid="stSidebar"] * { color: var(--text) !important; }
+# [data-testid="stElementContainer"] { display: none; !important}
 [data-testid="stSidebar"] .block-container { padding: 0 !important; }
 
 /* ── sidebar brand ───────────────────────────────────── */
 .sb-brand {
-  padding: 1.6rem 1.4rem 1.2rem;
+  padding-bottom: 1.2rem;
+  display: flex;
+                flex-direction: column;
+                gap:0;
+  align-items: center;
   border-bottom: 1px solid var(--border);
 }
 .sb-brand .sb-logo {
   width: 40px; height: 40px; border-radius: 10px;
   background: var(--orange); display: flex; align-items: center;
-  justify-content: center; margin-bottom: 0.8rem;
+  justify-content: center; margin-bottom: 0.2rem;
 }
 .sb-brand .sb-logo svg { width: 22px; height: 22px; color: #fff; }
 .sb-brand h2 { font-size: 0.95rem; font-weight: 600; margin: 0 0 2px; color: var(--text); }
 .sb-brand p  { font-size: 0.72rem; color: var(--sub); margin: 0; }
 
-/* ── nav items ───────────────────────────────────────── */
-./* ── nav items ───────────────────────────────────────── */
-.sb-nav-item {
-  display: flex; align-items: center; gap: 10px;
-  padding: 0.6rem 0.8rem; border-radius: 8px;
-  font-size: 0.875rem; font-weight: 500;
-  color: var(--sub); margin-bottom: 2px;
-  border: 1px solid transparent;
+.stTabs [data-baseweb="tab-list"] {
+        gap: 40px;
+        margin-Top: 20px;
+    }
+.stTabs [data-baseweb="tab"] {
+    height: 60px;
+    background-color: transparent !important;
+    border: none !important;
+    color: white !important;
+    font-weight: 700 !important;
+    font-size: 1rem !important;
 }
-.sb-nav-item.active {
-  color: var(--orange); background: rgba(249,115,22,0.12);
-  border-color: rgba(249,115,22,0.25);
+.stTabs [aria-selected="true"] {
+    color: var(--orange) !important;
+    
 }
-.sb-nav-item svg { width: 17px; height: 17px; flex-shrink: 0; }
+                
+.stTabs [data-baseweb="tab-highlight"] {
+    background-color: var(--orange) !important;border-radius: 10px;
+}
+    
 
-/* ── sidebar real buttons styled as nav items ─────────── */
-[data-testid="stSidebar"] .stButton > button {
-  display: flex !important;
-  align-items: center !important;
-  gap: 10px !important;
-  width: 100% !important;
-  padding: 0.6rem 0.8rem !important;
-  border-radius: 8px !important;
-  font-size: 0.875rem !important;
-  font-weight: 500 !important;
-  color: var(--sub) !important;
-  background: transparent !important;
-  border: 1px solid transparent !important;
-  font-family: var(--font) !important;
-  text-align: left !important;
-  justify-content: flex-start !important;
-  box-shadow: none !important;
-  transition: all 0.15s ease !important;
-  margin-bottom: 2px !important;
+/* ── predict button ──────────────────────────────────── */
+.stButton > button {
+  background: var(--orange) !important; color: #fff !important;
+  border: none !important; border-radius: 10px !important;
+  padding: 0.7rem 1.5rem !important; font-weight: 600 !important;
+  font-size: 0.9rem !important; font-family: var(--font) !important;
+  width: 100% !important; letter-spacing: 0.02em !important;
+  transition: background 0.2s !important;
 }
-[data-testid="stSidebar"] .stButton > button:hover {
-  color: var(--text) !important;
-  background: var(--bg3) !important;
-  border-color: transparent !important;
-}
-/* Active state via data attribute on wrapper */
-[data-testid="stSidebar"] .stButton.active-nav > button {
-  color: var(--orange) !important;
-  background: rgba(249,115,22,0.12) !important;
-  border-color: rgba(249,115,22,0.25) !important;
-}
+.stButton > button:hover { background: var(--orange2) !important; }
+
 
 /* ── sb footer stats ─────────────────────────────────── */
 .sb-stats {
@@ -337,35 +388,38 @@ html, body, [class*="css"], .stApp { background-color: var(--bg); font-family: v
 .sb-stats .stat-val { font-size: 0.71rem; font-weight: 600; color: var(--orange); font-family: var(--mono); }
 
 /* ── main area ───────────────────────────────────────── */
-.main .block-container { padding: 0 !important; max-width: 100% !important; }
+.block-container { padding: 0rem 1rem !important; margin: 0rem !important; }
 
 /* ── hero banner ─────────────────────────────────────── */
 .hero-banner {
-  position: relative; height: 220px; overflow: hidden;
-  border-radius: 0 0 20px 20px; margin-bottom: 2rem;
+  position: relative; height: 300px; overflow: hidden;
+  border-radius: 0 0 20px 20px; margin-bottom: 0rem;
 }
 .hero-banner img {
   width: 100%; height: 100%; object-fit: cover; object-position: center 35%;
-  filter: brightness(0.35);
+  filter: brightness(0.50);
 }
 .hero-overlay {
   position: absolute; inset: 0; display: flex;
+                padding: 30px;
   flex-direction: column; justify-content: center;
-  padding: 0 2.5rem;
   background: linear-gradient(90deg, rgba(13,15,20,0.7) 0%, transparent 100%);
 }
 .hero-overlay .hero-badge {
-  display: inline-flex; align-items: center; gap: 6px;
+  display: inline-flex;
+#  align-items: center; 
+                gap: 6px;
   background: rgba(249,115,22,0.2); border: 1px solid rgba(249,115,22,0.4);
   color: var(--orange2); font-size: 0.72rem; font-weight: 600;
   letter-spacing: 0.08em; text-transform: uppercase;
-  padding: 4px 12px; border-radius: 99px; margin-bottom: 0.8rem; width: fit-content;
+  padding: 10px 12px; border-radius: 99px; margin-bottom: 0.8rem;width: fit-content;
+                height: 40px
 }
 .hero-overlay h1 { font-size: 1.75rem; font-weight: 700; color: #fff; margin: 0 0 0.3rem; line-height: 1.25; }
 .hero-overlay p  { font-size: 0.88rem; color: rgba(255,255,255,0.65); margin: 0; }
 
 /* ── page wrapper (non-hero pages) ──────────────────── */
-.page-wrap { padding: 1.8rem 2.2rem 2.5rem; }
+# .page-wrap { padding-top: 2.8rem; }
 
 /* ── section heading ─────────────────────────────────── */
 .sec-head { margin-bottom: 1.4rem; }
@@ -430,16 +484,6 @@ html, body, [class*="css"], .stApp { background-color: var(--bg); font-family: v
   background: var(--bg3) !important; border-color: var(--border) !important; color: var(--text) !important;
 }
 
-/* ── predict button ──────────────────────────────────── */
-# .stButton > button {
-#   background: var(--orange) !important; color: #fff !important;
-#   border: none !important; border-radius: 10px !important;
-#   padding: 0.7rem 1.5rem !important; font-weight: 600 !important;
-#   font-size: 0.9rem !important; font-family: var(--font) !important;
-#   width: 100% !important; letter-spacing: 0.02em !important;
-#   transition: background 0.2s !important;
-# }
-# .stButton > button:hover { background: var(--orange2) !important; }
 
 
 /* ── about image ─────────────────────────────────────── */
@@ -462,6 +506,22 @@ html, body, [class*="css"], .stApp { background-color: var(--bg); font-family: v
 .pipe-content { padding-bottom: 0.5rem; }
 .pipe-content .pipe-title { font-size: 0.82rem; font-weight: 600; color: var(--text); }
 .pipe-content .pipe-sub   { font-size: 0.74rem; color: var(--sub); margin-top: 1px; }
+                
+
+section[data-testid="stSidebar"] .stButton > button{
+  display: flex !important; align-items: center !important; gap: 5px !important;background: none !important;justify-content: start !important;
+  padding: 0.6rem 0.8rem !important; border-radius: 8px !important;
+                
+  font-size: 0.875rem !important; font-weight: 500 !important;
+  color: var(--sub) !important; cursor: pointer !important; margin-bottom: 2px !important;
+  transition: all 0.15s ease !important; border: 1px solid transparent !important;
+}
+# .sb-nav-item:hover ,section[data-testid="stSidebar"] .stButton > button:hover{ color: var(--text) !important; background: var(--bg3) !important; }
+# .sb-nav-item.active ,section[data-testid="stSidebar"] .stButton > button.active{
+#   color: var(--orange) !important; background: rgba(249,115,22,0.12) !important;
+#   border-color: rgba(249,115,22,0.25) !important;
+# }
+# .sb-nav-item svg { width: 17px; height: 17px; flex-shrink: 0; }
 
 /* ── links ───────────────────────────────────────────── */
 .link-item {
@@ -487,7 +547,7 @@ html, body, [class*="css"], .stApp { background-color: var(--bg); font-family: v
 ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 99px; }
 
 /* hide default streamlit chrome ──────────────────────── */
-#MainMenu { visibility: hidden; }
+MainMenu { visibility: hidden; }
 footer    { visibility: hidden; }
 # header    { visibility: hidden; }
 # [data-testid="stToolbar"] { display: none; }
@@ -519,74 +579,6 @@ def icon(name):
     return icons.get(name, "")
 
 
-# ─── SIDEBAR ─────────────────────────────────────────────────────────────────
-def render_sidebar(T, lang, page):
-    nav_items = [
-        ("predict",     T["nav_predict"],     "predict"),
-        ("performance", T["nav_performance"], "chart"),
-        ("features",    T["nav_features"],    "star"),
-        ("about",       T["nav_about"],       "info"),
-    ]
-
-    with st.sidebar:
-        # Brand
-        st.markdown(f"""
-        <div class="sb-brand">
-            <div class="sb-logo">{icon("logo")}</div>
-            <h2>{T['app_title']}</h2>
-            <p>{T['app_subtitle']}</p>
-        </div>
-        """, unsafe_allow_html=True)
-
-        # Language selector
-        st.markdown('<div style="padding: 0.8rem 1.2rem 0.4rem;">', unsafe_allow_html=True)
-        lang_choice = st.selectbox(
-            T["lang_label"],
-            ["English", "Français"],
-            index=0 if lang == "en" else 1,
-            label_visibility="visible",
-        )
-        st.markdown('</div>', unsafe_allow_html=True)
-
-        new_lang = "en" if lang_choice == "English" else "fr"
-        if new_lang != st.session_state.lang:
-            st.session_state.lang = new_lang
-            st.rerun()
-
-        # Nav
-        st.markdown('<div class="sb-nav">', unsafe_allow_html=True)
-        for key, label, ic in nav_items:
-            active_cls = "active" if page == key else ""
-            st.markdown(
-                f'<div class="sb-nav-item {active_cls}" id="nav_{key}">{icon(ic)} {label}</div>',
-                unsafe_allow_html=True,
-            )
-            if st.button(label, key=f"btn_{key}", use_container_width=True):
-                st.session_state.page = key
-                st.session_state.show_result = False
-                st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
-
-        # Footer stats
-        st.markdown(f"""
-        <div class="sb-stats">
-            <div class="stat-row"><span class="stat-lbl">Best Model</span><span class="stat-val">LightGBM</span></div>
-            <div class="stat-row"><span class="stat-lbl">Accuracy</span><span class="stat-val">57.0%</span></div>
-            <div class="stat-row"><span class="stat-lbl">F1 Score</span><span class="stat-val">0.537</span></div>
-            <div class="stat-row"><span class="stat-lbl">Dataset</span><span class="stat-val">DHS Cameroon</span></div>
-            <div class="stat-row" style="margin-bottom:0"><span class="stat-lbl">Samples</span><span class="stat-val">1,454</span></div>
-        </div>
-        """, unsafe_allow_html=True)
-
-    # Hide the actual nav buttons (we render custom HTML above them)
-    st.markdown("""
-    <style>
-    [data-testid="stSidebar"] .stButton { display: none; }
-   
-    </style>
-    """, unsafe_allow_html=True)
-
-
 # ─── LOAD RESOURCES ───────────────────────────────────────────────────────────
 @st.cache_resource
 def load_model():
@@ -614,6 +606,7 @@ def load_results():
 
 
 def build_input_df(vals):
+    print("Building input DataFrame from values: ", vals)
     row = {f: vals[f] for f in NUMERICAL_FEATURES}
     for f in CATEGORICAL_FEATURES:
         row[f] = vals.get(f, 0)
@@ -625,23 +618,14 @@ def page_predict(T, model):
     CLASSES = [T["pred_class_1"], T["pred_class_2"], T["pred_class_3"]]
     BAR_COLORS = ["#f97316", "#fb923c", "#fdba74"]
 
-    # Hero
-    st.markdown(f"""
-    <div class="hero-banner">
-        <img src="{IMG_HERO}" alt="Women's health"/>
-        <div class="hero-overlay">
-            <div class="hero-badge">{icon("heart")} DHS Cameroon · LightGBM</div>
-            <h1>{T['pred_hero_title']}</h1>
-            <p>{T['pred_hero_sub']}</p>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
 
     # ── Anchor target for scroll-to-results
     st.markdown('<div id="prediction-result-anchor"></div>', unsafe_allow_html=True)
 
     # Show result panel if prediction was made
     if st.session_state.get("show_result") and "last_proba" in st.session_state:
+        print("Displaying prediction results...")
+        print("Session Data: ", st.session_state)
         probs = st.session_state.last_proba
         pred  = st.session_state.last_pred
         conf  = float(probs[pred]) * 100
@@ -726,7 +710,7 @@ def page_predict(T, model):
         region    = st.selectbox(T["region"],    list(REGION_OPT.keys()),     format_func=lambda x: REGION_OPT[x], key="reg")
         r3, r4 = st.columns(2)
         woman_w   = r3.selectbox(T["woman_working"],   [0, 1],    format_func=lambda x: FP_YN[x], key="ww")
-        husband_w = r4.selectbox(T["husband_working"], [0, 1, 9], format_func=lambda x: WORKING_OPT[x], key="hw")
+        # husband_w = r4.selectbox(T["husband_working"], [0, 1, 9], format_func=lambda x: WORKING_OPT[x], key="hw")
         st.markdown('</div>', unsafe_allow_html=True)
 
     with col2:
@@ -756,12 +740,14 @@ def page_predict(T, model):
                 "region": region, "religion": religion,
                 "marital_status": marital_s, "marriage_type": marriage_t,
                 "current_method": current_m, "fertility_preference": fertility_p,
-                "woman_working": woman_w, "husband_working": husband_w,
+                "woman_working": woman_w,
+                #   "husband_working": husband_w,
                 "fieldworker_fp": fieldworker, "facility_fp": facility,
                 "media_any": media, "anc_group": anc,
                 "husband_desired_children": 1,
             }
             if model is None:
+                st.sidebar.error("❌ Model NOT loaded - using demo values")
                 st.warning(T["no_model_warn"])
                 probabilities = np.array([0.27, 0.16, 0.57])
                 predicted_class = 2
@@ -878,6 +864,7 @@ def page_features(T, model):
     # Try real importances
     importances, feature_names = None, None
     if model is not None:
+        
         try:
             clf = model.named_steps[list(model.named_steps.keys())[-1]]
             pre = model.named_steps.get("preprocessor", None)
@@ -948,6 +935,10 @@ PIPELINE_STEPS = [
     ("trophy",  "Best Model: LightGBM",         "F1 0.537 · Accuracy 57.0%"),
 ]
 
+def get_base64(file):
+    with open(file,"rb") as f:
+        return base64.b64encode(f.read()).decode()
+
 def page_about(T):
     st.markdown('<div class="page-wrap">', unsafe_allow_html=True)
     st.markdown(f'<div class="sec-head"><h2>{T["about_title"]}</h2></div>', unsafe_allow_html=True)
@@ -977,13 +968,26 @@ def page_about(T):
         """, unsafe_allow_html=True)
         st.markdown('</div>', unsafe_allow_html=True)
 
+             # Links
+        st.markdown(f'<div class="card"><div class="card-title">{icon("link")} {T["about_links"]}</div>', unsafe_allow_html=True)
+        for lbl, url in [
+            (T["about_github"], "https://github.com/Enow-brenda/congenial-winner"),
+            (T["about_docs"],   "https://github.com/Enow-brenda/congenial-winner/raw/refs/heads/main/Womens_Decisional_Autonomy_Research_Report.docx"),
+            (T["about_dhs"],    "https://dhsprogram.com/"),
+        ]:
+            st.markdown(f'<a class="link-item" href="{url}" target="_blank">{icon("external")} {lbl}</a>', unsafe_allow_html=True)
+        
         st.markdown(f'<div class="disclaimer">{icon("alert")} {T["about_disclaimer"]}</div>', unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+
+        
 
     with col_side:
         # Author card
+        img = get_base64("brenda.jpg")
         st.markdown(f"""
-        <div class="about-img-wrap" style="height:180px;">
-            <img src="{IMG_ABOUT_2}" alt="Academic"/>
+        <div class="about-img-wrap" style="height:20rem;">
+            <img src="data:image/jpg;base64,{img}" alt="Academic"/>
         </div>
         """, unsafe_allow_html=True)
 
@@ -998,21 +1002,13 @@ def page_about(T):
             st.markdown(f'<div style="display:flex;justify-content:space-between;padding:0.35rem 0;border-bottom:1px solid var(--border);font-size:0.8rem;"><span style="color:var(--sub)">{label}</span><span style="font-weight:500;color:var(--text)">{val}</span></div>', unsafe_allow_html=True)
         st.markdown('</div>', unsafe_allow_html=True)
 
-        # Links
-        st.markdown(f'<div class="card"><div class="card-title">{icon("link")} {T["about_links"]}</div>', unsafe_allow_html=True)
-        for lbl, url in [
-            (T["about_github"], "https://github.com/Enow-brenda/congenial-winner"),
-            (T["about_docs"],   "https://github.com/Enow-brenda/congenial-winner/raw/refs/heads/main/Womens_Decisional_Autonomy_Research_Report.docx"),
-            (T["about_dhs"],    "https://dhsprogram.com/"),
-        ]:
-            st.markdown(f'<a class="link-item" href="{url}" target="_blank">{icon("external")} {lbl}</a>', unsafe_allow_html=True)
-        st.markdown('</div>', unsafe_allow_html=True)
+   
 
         # Pipeline
         st.markdown(f'<div class="card"><div class="card-title">{icon("cpu")} {T["about_pipeline"]}</div><div class="pipeline-steps">', unsafe_allow_html=True)
         for i, (ic, title, sub) in enumerate(PIPELINE_STEPS):
             last = i == len(PIPELINE_STEPS) - 1
-            line_html = '' if last else '<div class="pipe-line"></div>'
+            line_html = '<div></div>' if last else '<div class="pipe-line"></div>'
             st.markdown(f"""
             <div class="pipe-step">
                 <div class="pipe-dot-wrap">
@@ -1025,32 +1021,30 @@ def page_about(T):
                 </div>
             </div>
             """, unsafe_allow_html=True)
-        st.markdown('</div></div>', unsafe_allow_html=True)
+        st.markdown('</div></div></div>', unsafe_allow_html=True)
 
     st.markdown('</div>', unsafe_allow_html=True)
 
 
 # ─── SIDEBAR NAV HACK (real buttons hidden, html nav shown above) ─────────────
 def real_sidebar_nav(T):
-    page = st.session_state.page
-    nav_items = [
-        ("predict",     T["nav_predict"],     "predict"),
-        ("performance", T["nav_performance"], "chart"),
-        ("features",    T["nav_features"],    "star"),
-        ("about",       T["nav_about"],       "info"),
-    ]
 
     with st.sidebar:
-        # Brand header
+        # Inject nav CSS once
+        st.markdown(NAV_CSS, unsafe_allow_html=True)
+ 
+        # ── Brand ────────────────────────────────────────────────────────────
+        heart_svg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>'
         st.markdown(f"""
         <div class="sb-brand">
-            <div class="sb-logo">{icon("logo")}</div>
+            <div class="sb-logo">{heart_svg}</div>
             <h2>{T['app_title']}</h2>
             <p>{T['app_subtitle']}</p>
         </div>
         """, unsafe_allow_html=True)
-
-        # Language selector
+ 
+        # ── Language selector ────────────────────────────────────────────────
+        st.markdown('<div style="padding:0.4rem 0.4rem 0;">', unsafe_allow_html=True)
         lang_choice = st.selectbox(
             T["lang_label"],
             ["English", "Français"],
@@ -1061,25 +1055,49 @@ def real_sidebar_nav(T):
         if new_lang != st.session_state.lang:
             st.session_state.lang = new_lang
             st.rerun()
-
-        st.markdown('<div style="padding: 0.4rem 0.4rem 0;">', unsafe_allow_html=True)
-
-        for key, label, ic in nav_items:
-            is_active = page == key
-            active_cls = "active-nav" if is_active else ""
-            st.markdown(
-                f'<div class="stButton {active_cls}" id="wrap_{key}">',
-                unsafe_allow_html=True,
-            )
-            if st.button(label, key=f"nav_{key}", use_container_width=True):
-                st.session_state.page = key
-                st.session_state.show_result = False
-                st.rerun()
-            st.markdown('</div>', unsafe_allow_html=True)
-
         st.markdown('</div>', unsafe_allow_html=True)
+ 
+        # ── Nav links ────────────────────────────────────────────────────────
+        # We render each nav item as a styled <a> that uses JS to push a query
+        # param into the parent window URL, which triggers Streamlit to rerun.
+        lang = st.session_state.lang
+        st.markdown('<div style="padding-bottom:0.5rem ;">', unsafe_allow_html=True)
+ 
+        # for key, label_en, label_fr, svg in NAV_ITEMS:
+        #     label = label_en if lang == "en" else label_fr
+        #     active_cls = "active" if page == key else ""
+ 
+        #     # The <a> tag pushes ?page=KEY to the parent iframe URL via JS.
+        #     # Streamlit detects the query param change and reruns automatically.
+        #     html_code = f"""
+        #     <a class="sb-nav-link {active_cls}"
+        #     href="#"
+        #     onclick="">
+        #     {svg} {label}
+        #     </a>
+        #     """
 
-        # Footer stats
+        #     st.markdown(html_code, unsafe_allow_html=True)
+            
+ 
+        # st.markdown('</div>', unsafe_allow_html=True)
+       
+ 
+        # Hidden real Streamlit buttons — these fire Python-side page switches.
+       
+        # st.markdown('<div style="display:none">', unsafe_allow_html=True)
+        # for key, label_en, label_fr, svg in NAV_ITEMS:
+        #     label = label_en if lang == "en" else label_fr
+        #     button_label = f"{label}"
+        #     if st.button(button_label, key=f"nav_{key}"):
+        #         st.session_state.page = key
+        #         st.session_state.show_result = False
+                
+        #         st.query_params["page"] = key
+        #         st.rerun()
+        # st.markdown('</div>', unsafe_allow_html=True)
+ 
+        # ── Footer stats ──────────────────────────────────────────────────────
         st.markdown(f"""
         <div class="sb-stats">
             <div class="stat-row"><span class="stat-lbl">Best Model</span><span class="stat-val">LightGBM</span></div>
@@ -1094,26 +1112,57 @@ def real_sidebar_nav(T):
 
 # ─── MAIN ─────────────────────────────────────────────────────────────────────
 def main():
+    # ── Init session state ───────────────────────────────────────────────────
     if "lang"        not in st.session_state: st.session_state.lang        = "en"
-    if "page"        not in st.session_state: st.session_state.page        = "about"
     if "show_result" not in st.session_state: st.session_state.show_result = False
-
+ 
+    # ── Read page from query params FIRST (before session_state default) ─────
+    qp = st.query_params
+    if "page" not in st.session_state:
+        st.session_state.page = qp.get("page", "predict")
+    elif "page" in qp and qp["page"] != st.session_state.page:
+        # URL changed (back/forward button or direct link)
+        if qp["page"] in ("predict", "performance", "features", "about"):
+            st.session_state.page = qp["page"]
+ 
     inject_css()
-
+ 
     lang = st.session_state.lang
     T    = TRANSLATIONS[lang]
     page = st.session_state.page
-
+ 
+    # Keep URL in sync with session_state
+    st.query_params["page"] = page
+ 
     model   = load_model()
     results = load_results()
+ 
+    real_sidebar_nav(T)
 
-    real_sidebar_nav(T)   # ← This is now the ONLY sidebar block
+     # Hero
+    st.markdown(f"""
+    <div class="hero-banner">
+        <img src="{IMG_HERO}" alt="Women's health"/>
+        <div class="hero-overlay">
+            <div class="hero-badge">{icon("heart")} DHS Cameroon · LightGBM</div>
+            <h1>{T['pred_hero_title']}</h1>
+            <p>{T['pred_hero_sub']}</p>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
-    if   page == "predict":     page_predict(T, model)
-    elif page == "performance": page_performance(T, results)
-    elif page == "features":    page_features(T, model)
-    elif page == "about":       page_about(T)
-
-
+    tabs = st.tabs([T[p] for p in ["nav_predict", "nav_performance", "nav_features","nav_about"]])
+ 
+   
+    with tabs[0]:
+        page_predict(T, model)
+    with tabs[1]:
+        page_performance(T, results)
+    with tabs[2]:
+        page_features(T, model)
+    with tabs[3]:
+        page_about(T)
+ 
+ 
 if __name__ == "__main__":
     main()
