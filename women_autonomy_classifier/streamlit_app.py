@@ -1001,9 +1001,8 @@ PIPELINE_STEPS = [
     ("db",      "DHS Cameroon Dataset",         "1,533 women · 25 raw variables"),
     ("filter",  "Preprocessing & Cleaning",     "Missing values, outlier removal (LOF 5%)"),
     ("filter",  "RFE Feature Selection",        "18 features selected via Logistic Regression"),
-    ("balance", "SMOTE Class Balancing",        "Synthetic oversampling of minority classes"),
-    ("cpu",     "5-Fold Cross-Validation",      "Compared 7 ML algorithms"),
-    ("trophy",  "Best Model: LightGBM",         "F1 0.537 · Accuracy 57.0%"),
+    ("cpu",     "10-Fold Cross-Validation",      "Compared 7 ML algorithms"),
+    ("trophy",  "Best Model: LightGBM",         "F1 0.537 · Accuracy 55.0%"),
 ]
 
 def get_base64(file):
