@@ -18,7 +18,7 @@ from sklearn.svm import SVC
 from xgboost import XGBClassifier
 from lightgbm import LGBMClassifier
 
-from sklearn.metrics import f1_score, classification_report, confusion_matrix, accuracy_score
+from sklearn.metrics import f1_score, classification_report, confusion_matrix, accuracy_score, precision_score, recall_score
 
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -107,11 +107,14 @@ for name, model in models.items():
         scoring="f1_weighted"
     )
 
-    results[name] = scores.mean()
+    results[name] = {
+        "mean": scores.mean(),
+        "std": scores.std()
+    }
 
     print(f"{name}: {scores.mean():.4f} ± {scores.std():.4f}")
 
-best_model_name = max(results, key=results.get)
+best_model_name = max(results, key=lambda k: results[k]["mean"])
 print("\nBest model:", best_model_name)
 
 best_model = models[best_model_name]
@@ -159,8 +162,31 @@ results_dict = {
 with open("results.json", "w") as f:
     json.dump(results_dict, f, indent=4)
 
-print("\n✔ ALL FILES SAVED:")
+# Save model_results.json (expected by Streamlit app)
+model_results = {
+    "best_model": best_model_name,
+    "cv_performance": {
+        "mean_f1": float(results[best_model_name]["mean"]),
+        "std_f1": float(results[best_model_name]["std"])
+    },
+    "test_performance": {
+        "accuracy": float(accuracy_score(y_test, y_pred)),
+        "f1_score": float(f1_score(y_test, y_pred, average="weighted")),
+        "precision": float(precision_score(y_test, y_pred, average="weighted")),
+        "recall": float(recall_score(y_test, y_pred, average="weighted"))
+    },
+    "confusion_matrix": cm.tolist(),
+    "sample_size": len(X),
+    "train_size": len(X_train),
+    "test_size": len(X_test)
+}
+
+with open("model_results.json", "w") as f:
+    json.dump(model_results, f, indent=4)
+
+print("\n[SUCCESS] ALL FILES SAVED:")
 print(" - best_model.pkl")
 print(" - preprocessor.pkl")
 print(" - label_encoder.pkl")
+print(" - results.json")
 print(" - model_results.json")

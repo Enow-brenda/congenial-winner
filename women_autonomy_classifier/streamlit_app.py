@@ -113,7 +113,7 @@ TRANSLATIONS = {
         "religion": "Religion",
         "marital_status": "Marital Status",
         "marriage_type": "Marriage Type",
-        "current_method": "Currently Using FP Method",
+        "current_method": "Currently FP method used",
         "fertility_preference": "Fertility Preference",
         "woman_working": "Woman Currently Working",
         "husband_working": "Husband Currently Working",
@@ -152,6 +152,7 @@ TRANSLATIONS = {
         "about_model_lbl": "Best Model",
         "about_model_txt": "LightGBM — F1: 0.537 · Accuracy: 57.0%",
         "about_links": "Links & Resources",
+        "pred_result": "Prediction Result",
         "about_github": "GitHub Repository",
         "about_docs": "Full Report / Documentation",
         "about_dhs": "DHS Program (Data Source)",
@@ -160,6 +161,7 @@ TRANSLATIONS = {
         "about_supervisor": "Supervisor",
         "about_year": "Academic Year",
         "about_pipeline": "ML Pipeline",
+        "husband_desired_children": "Husband Desired Preference for Children",
         "about_disclaimer": (
             "Academic disclaimer — This tool is intended for research purposes only "
             "and should not be used for clinical or policy decisions without further validation."
@@ -182,6 +184,7 @@ TRANSLATIONS = {
         "pred_media": "Médias & Accès aux Soins",
         "pred_btn": "Lancer la Prédiction",
         "pred_result_title": "Catégorie Prédite",
+        "pred_result": "Résultat de la Prédiction",
         "pred_class_1": "Femme seule",
         "pred_class_2": "Partenaire seul",
         "pred_class_3": "Décision conjointe",
@@ -199,7 +202,7 @@ TRANSLATIONS = {
         "religion": "Religion",
         "marital_status": "Statut matrimonial",
         "marriage_type": "Type de mariage",
-        "current_method": "Utilise actuellement une méthode PF",
+        "current_method": "Méthode PF Utilisée",
         "fertility_preference": "Préférence de fécondité",
         "woman_working": "Femme exerçant une activité",
         "husband_working": "Mari exerçant une activité",
@@ -246,6 +249,7 @@ TRANSLATIONS = {
         "about_supervisor": "Directeur de mémoire",
         "about_year": "Année Académique",
         "about_pipeline": "Pipeline ML",
+        "husband_desired_children": "Préférence du mari pour les enfants",
         "about_disclaimer": (
             "Avertissement académique — Cet outil est destiné à la recherche uniquement "
             "et ne doit pas être utilisé à des fins cliniques ou politiques sans validation supplémentaire."
@@ -256,28 +260,49 @@ TRANSLATIONS = {
 
 # ─── OPTION MAPS ─────────────────────────────────────────────────────────────
 EDU_OPTIONS    = {0: "No Education", 1: "Primary", 2: "Secondary", 3: "Higher"}
+HUSBAND_DESIRED = {1: "Same as Woman", 2: "Wants more", 3: "Wants fewer", 8: "Don't Know"}
 WEALTH_OPTIONS = {1: "Poorest", 2: "Poorer", 3: "Middle", 4: "Richer", 5: "Richest"}
 RESIDENCE_OPT  = {1: "Urban", 2: "Rural"}
 RELIGION_OPT   = {1: "Catholic", 2: "Protestant", 3: "Muslim", 4: "Animist", 5: "Other Christian", 6: "No Religion"}
-MARITAL_OPT    = {1: "Monogamous", 2: "Polygamous"}
-MARRIAGE_TYPE  = {1: "Civil", 2: "Religious", 3: "Customary / Traditional"}
+MARRIAGE_TYPE    = {1: "Monogamous", 2: "Polygamous"}
+MARITAL_OPT  = {1: "Formally married", 2: "Cohabiting"}
 FP_YN          = {0: "No", 1: "Yes"}
+CURRENT_METHOD_OPT  ={1: 'Pill',
+                                2: 'IUD',
+                                3: 'Injections',
+                                4: 'Diaphragm',
+                                5: 'Male condom',
+                                6: 'Female sterilization',
+                                7: 'Male sterilization',
+                                8: 'Periodic abstinence',
+                                9: 'Withdrawal',
+                                10: 'Other traditional',
+                                11: 'Implants/Norplant',
+                                12: 'Prolonged abstinence',
+                                13: 'Lactational amenorrhea (LAM)',
+                                14: 'Female condom',
+                                15: 'Foam or jelly',
+                                16: 'Emergency contraception',
+                                17: 'Other modern method',
+                                18: 'Standard days method (SDM)',
+                                19: 'Specific method 1',
+                                20: 'Specific method 2'}    
 FERTILITY_OPT  = {1: "Wants More", 2: "No More", 3: "Undecided"}
-WORKING_OPT    = {0: "No", 1: "Yes", 9: "Don't Know"}
-FIELDWKR_OPT   = {0: "No", 1: "Yes", 8: "Don't Know"}
-FACILITY_OPT   = {0: "No", 1: "Yes", 8: "Don't Know"}
+WORKING_OPT    = {0: "No", 1: "Yes"}
+FIELDWKR_OPT   = {0: "No", 1: "Yes"}
+FACILITY_OPT   = {0: "No", 1: "Yes", 8: "Didn't visit facility"}
 MEDIA_OPT      = {0: "No", 1: "Yes"}
-ANC_OPT        = {0: "None", 1: "1–3 visits", 2: "4+ visits", 9: "Don't Know"}
+ANC_OPT        = {0: "None", 1: "1–3 visits", 2: "4+ visits", 9: "No pregnancy in last 5 years"}
 REGION_OPT     = {
-    1: "Adamaoua", 2: "Centre (excl. Yaoundé)", 3: "Est", 4: "Extrême-Nord",
-    5: "Littoral (excl. Douala)", 6: "Nord", 7: "Nord-Ouest", 8: "Ouest",
-    9: "Sud", 10: "Sud-Ouest", 11: "Douala", 12: "Yaoundé",
+    1: "Adamaoua", 2: "Center (excl. Yaoundé)", 3: "East", 4: "Far-North",
+    5: "Littoral (excl. Douala)", 6: "North", 7: "North-West", 8: "West",
+    9: "South", 10: "South-West", 11: "Douala", 12: "Yaounde",
 }
 
 NUMERICAL_FEATURES   = ["age", "num_children"]
 CATEGORICAL_FEATURES = [
-    "residence", "edu_woman", "religion", "region", "marital_status",
-    "wealth", "marriage_type", "woman_working", "fertility_preference",
+    "residence", "edu_woman", "edu_husband", "religion", "region", "marital_status",
+    "wealth", "marriage_type", "woman_working", "husband_working", "fertility_preference",
     "current_method", "husband_desired_children",
     "anc_group", "fieldworker_fp", "facility_fp", "media_any",
 ]
@@ -286,7 +311,7 @@ CATEGORICAL_FEATURES = [
 IMG_HERO        = "https://static.wixstatic.com/media/038af1_c222df03e4bc408cad78ba79e2432e72~mv2.jpeg/v1/fill/w_1000,h_560,al_c,q_85,usm_0.66_1.00_0.01/038af1_c222df03e4bc408cad78ba79e2432e72~mv2.jpeg"
 IMG_PREDICT_BG  = "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=900&q=75"
 IMG_ABOUT_1     = "https://cameroon.unfpa.org/sites/default/files/topics/pf_.jpeg"
-IMG_ABOUT_2     = "brenda.jpg"
+IMG_ABOUT_2     = "old/brenda.jpg"
 
 # ─── GLOBAL CSS (dark-only, orange accent) ───────────────────────────────────
 def inject_css():
@@ -605,11 +630,36 @@ def load_results():
     return default
 
 
-def build_input_df(vals):
+def build_input_df(vals, model=None):
     print("Building input DataFrame from values: ", vals)
-    row = {f: vals[f] for f in NUMERICAL_FEATURES}
-    for f in CATEGORICAL_FEATURES:
+    
+    # Defaults in case preprocessor loading fails
+    num_cols = ["age", "num_children"]
+    cat_cols = [
+        "residence", "edu_woman", "edu_husband", "religion", "region", "marital_status",
+        "wealth", "marriage_type", "woman_working", "husband_working", "fertility_preference",
+        "current_method", "husband_desired_children",
+        "anc_group", "fieldworker_fp", "facility_fp", "media_any"
+    ]
+    
+    # Retrieve feature names from the trained preprocessor dynamically
+    if model is not None:
+        try:
+            if hasattr(model, 'named_steps') and 'preprocess' in model.named_steps:
+                prep = model.named_steps['preprocess']
+                num_cols = prep.transformers[0][2]
+                cat_cols = prep.transformers[1][2]
+            elif os.path.exists("preprocessor.pkl"):
+                prep = joblib.load("preprocessor.pkl")
+                num_cols = prep.transformers[0][2]
+                cat_cols = prep.transformers[1][2]
+        except Exception as e:
+            print(f"Error loading preprocessor features: {e}")
+            
+    row = {f: vals.get(f, 28 if f == "age" else 2) for f in num_cols}
+    for f in cat_cols:
         row[f] = vals.get(f, 0)
+        
     return pd.DataFrame([row])
 
 
@@ -618,10 +668,100 @@ def page_predict(T, model):
     CLASSES = [T["pred_class_1"], T["pred_class_2"], T["pred_class_3"]]
     BAR_COLORS = ["#f97316", "#fb923c", "#fdba74"]
 
+    # ── Form
+    st.markdown('<div class="page-wrap" style="padding-top:1.5rem">', unsafe_allow_html=True)
+    st.markdown(f'<div class="sec-head"><h2>{T["pred_title"]}</h2><p>{T["pred_subtitle"]}</p></div>', unsafe_allow_html=True)
 
-    # ── Anchor target for scroll-to-results
-    st.markdown('<div id="prediction-result-anchor"></div>', unsafe_allow_html=True)
+    col1, col2 = st.columns([1, 1], gap="large")
 
+    with col1:
+        st.markdown(f'<div class="card"><div class="card-title">{icon("user")} {T["pred_personal"]}</div>', unsafe_allow_html=True)
+        r1, r2 = st.columns(2)
+        age          = r1.number_input(T["age"], 15, 49, 28, key="age")
+        num_children = r2.number_input(T["num_children"], 0, 15, 2, key="nc")
+        r3, r4 = st.columns(2)
+        edu_w  = r3.selectbox(T["edu_woman"],   list(EDU_OPTIONS.keys()),   format_func=lambda x: EDU_OPTIONS[x], key="edw")
+        edu_h  = r4.selectbox(T["edu_husband"], list(EDU_OPTIONS.keys()),   format_func=lambda x: EDU_OPTIONS[x], key="edh")
+        r5, r6 = st.columns(2)
+        religion  = r5.selectbox(T["religion"],     list(RELIGION_OPT.keys()), format_func=lambda x: RELIGION_OPT[x], key="rel")
+        marital_s = r6.selectbox(T["marital_status"], list(MARITAL_OPT.keys()), format_func=lambda x: MARITAL_OPT[x], key="mar")
+        marriage_t = st.selectbox(T["marriage_type"], list(MARRIAGE_TYPE.keys()), format_func=lambda x: MARRIAGE_TYPE[x], key="mart")
+        st.markdown('</div>', unsafe_allow_html=True)
+
+        st.markdown(f'<div class="card"><div class="card-title">{icon("building")} {T["pred_socio"]}</div>', unsafe_allow_html=True)
+        r1, r2 = st.columns(2)
+        wealth    = r1.selectbox(T["wealth"],    list(WEALTH_OPTIONS.keys()), format_func=lambda x: WEALTH_OPTIONS[x], key="wlth")
+        residence = r2.selectbox(T["residence"], list(RESIDENCE_OPT.keys()),  format_func=lambda x: RESIDENCE_OPT[x], key="res")
+        region    = st.selectbox(T["region"],    list(REGION_OPT.keys()),     format_func=lambda x: REGION_OPT[x], key="reg")
+        r3, r4 = st.columns(2)
+        woman_w   = r3.selectbox(T["woman_working"],   [0, 1],    format_func=lambda x: FP_YN[x], key="ww")
+        husband_w = r4.selectbox(T["husband_working"], [0, 1], format_func=lambda x: WORKING_OPT[x], key="hw")
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    with col2:
+        st.markdown(f'<div class="card"><div class="card-title">{icon("heart")} {T["pred_fp"]}</div>', unsafe_allow_html=True)
+        r1, r2 = st.columns(2)
+        current_m   = r1.selectbox(T["current_method"],      [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20],    format_func=lambda x: CURRENT_METHOD_OPT[x], key="cm")
+        fertility_p = r2.selectbox(T["fertility_preference"], list(FERTILITY_OPT.keys()), format_func=lambda x: FERTILITY_OPT[x], key="fp")
+        anc         = r1.selectbox(T["anc_group"], [0, 1, 2, 9], format_func=lambda x: ANC_OPT[x], key="anc")
+        husband_desired = r2.selectbox(T["husband_desired_children"], list(HUSBAND_DESIRED.keys()), format_func=lambda x: HUSBAND_DESIRED[x], key="hd")
+        st.markdown('</div>', unsafe_allow_html=True)
+
+        st.markdown(f'<div class="card"><div class="card-title">{icon("media")} {T["pred_media"]}</div>', unsafe_allow_html=True)
+        r1, r2 = st.columns(2)
+        fieldworker = r1.selectbox(T["fieldworker_fp"], [0, 1], format_func=lambda x: FIELDWKR_OPT[x], key="fw")
+        facility    = r2.selectbox(T["facility_fp"],    [0, 1, 8], format_func=lambda x: FACILITY_OPT[x], key="fac")
+        media       = st.selectbox(T["media_any"],      [0, 1],    format_func=lambda x: MEDIA_OPT[x], key="med")
+        st.markdown('</div>', unsafe_allow_html=True)
+
+        # Predict button
+        st.markdown("<br>", unsafe_allow_html=True)
+        predict_btn = st.button(T["pred_btn"], use_container_width=True, key="pred_btn")
+
+        if predict_btn:
+            vals = {
+                "age": age, "num_children": num_children,
+                "edu_woman": edu_w, "edu_husband": edu_h,
+                "wealth": wealth, "residence": residence,
+                "region": region, "religion": religion,
+                "marital_status": marital_s, "marriage_type": marriage_t,
+                "current_method": current_m, "fertility_preference": fertility_p,
+                "woman_working": woman_w,
+                "husband_working": husband_w,
+                "fieldworker_fp": fieldworker, "facility_fp": facility,
+                "media_any": media, "anc_group": anc,
+                "husband_desired_children": husband_desired,
+            }
+            if model is None:
+                st.sidebar.error("❌ Model NOT loaded - using demo values")
+                st.warning(T["no_model_warn"])
+                probabilities = np.array([0.27, 0.16, 0.57])
+                predicted_class = 2
+            else:
+                df_in = build_input_df(vals, model)
+                try:
+                    predicted_class = int(model.predict(df_in)[0])
+                    probabilities   = model.predict_proba(df_in)[0]
+                except Exception as e:
+                    st.error(f"Prediction error: {e}")
+                    probabilities = np.array([0.33, 0.33, 0.34])
+                    predicted_class = 2
+
+            st.session_state.last_proba  = list(probabilities)
+            st.session_state.last_pred   = predicted_class
+            st.session_state.show_result = True
+            # Scroll to top where results are shown
+            st.markdown("""
+            <script>
+            window.parent.document.querySelector('section.main').scrollTo({top: 0, behavior: 'smooth'});
+            </script>
+            """, unsafe_allow_html=True)
+            st.rerun()
+    
+
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    
     # Show result panel if prediction was made
     if st.session_state.get("show_result") and "last_proba" in st.session_state:
         print("Displaying prediction results...")
@@ -631,6 +771,7 @@ def page_predict(T, model):
         conf  = float(probs[pred]) * 100
 
         st.markdown('<div class="page-wrap" style="padding-top:0">', unsafe_allow_html=True)
+        st.markdown(f'<div class="sec-head"><h2>{T["pred_result"]}</h2></div>', unsafe_allow_html=True)
         col_rb, col_pb = st.columns([1, 1.2], gap="large")
 
         with col_rb:
@@ -683,96 +824,7 @@ def page_predict(T, model):
         st.markdown('</div>', unsafe_allow_html=True)
         st.markdown("<hr style='border-color:var(--border); margin:0.5rem 2.2rem 0;'>", unsafe_allow_html=True)
 
-    # ── Form
-    st.markdown('<div class="page-wrap" style="padding-top:1.5rem">', unsafe_allow_html=True)
-    st.markdown(f'<div class="sec-head"><h2>{T["pred_title"]}</h2><p>{T["pred_subtitle"]}</p></div>', unsafe_allow_html=True)
-
-    col1, col2 = st.columns([1, 1], gap="large")
-
-    with col1:
-        st.markdown(f'<div class="card"><div class="card-title">{icon("user")} {T["pred_personal"]}</div>', unsafe_allow_html=True)
-        r1, r2 = st.columns(2)
-        age          = r1.number_input(T["age"], 15, 49, 28, key="age")
-        num_children = r2.number_input(T["num_children"], 0, 15, 2, key="nc")
-        r3, r4 = st.columns(2)
-        edu_w  = r3.selectbox(T["edu_woman"],   list(EDU_OPTIONS.keys()),   format_func=lambda x: EDU_OPTIONS[x], key="edw")
-        edu_h  = r4.selectbox(T["edu_husband"], list(EDU_OPTIONS.keys()),   format_func=lambda x: EDU_OPTIONS[x], key="edh")
-        r5, r6 = st.columns(2)
-        religion  = r5.selectbox(T["religion"],     list(RELIGION_OPT.keys()), format_func=lambda x: RELIGION_OPT[x], key="rel")
-        marital_s = r6.selectbox(T["marital_status"], list(MARITAL_OPT.keys()), format_func=lambda x: MARITAL_OPT[x], key="mar")
-        marriage_t = st.selectbox(T["marriage_type"], list(MARRIAGE_TYPE.keys()), format_func=lambda x: MARRIAGE_TYPE[x], key="mart")
-        st.markdown('</div>', unsafe_allow_html=True)
-
-        st.markdown(f'<div class="card"><div class="card-title">{icon("building")} {T["pred_socio"]}</div>', unsafe_allow_html=True)
-        r1, r2 = st.columns(2)
-        wealth    = r1.selectbox(T["wealth"],    list(WEALTH_OPTIONS.keys()), format_func=lambda x: WEALTH_OPTIONS[x], key="wlth")
-        residence = r2.selectbox(T["residence"], list(RESIDENCE_OPT.keys()),  format_func=lambda x: RESIDENCE_OPT[x], key="res")
-        region    = st.selectbox(T["region"],    list(REGION_OPT.keys()),     format_func=lambda x: REGION_OPT[x], key="reg")
-        r3, r4 = st.columns(2)
-        woman_w   = r3.selectbox(T["woman_working"],   [0, 1],    format_func=lambda x: FP_YN[x], key="ww")
-        # husband_w = r4.selectbox(T["husband_working"], [0, 1, 9], format_func=lambda x: WORKING_OPT[x], key="hw")
-        st.markdown('</div>', unsafe_allow_html=True)
-
-    with col2:
-        st.markdown(f'<div class="card"><div class="card-title">{icon("heart")} {T["pred_fp"]}</div>', unsafe_allow_html=True)
-        r1, r2 = st.columns(2)
-        current_m   = r1.selectbox(T["current_method"],      [0, 1],    format_func=lambda x: FP_YN[x], key="cm")
-        fertility_p = r2.selectbox(T["fertility_preference"], list(FERTILITY_OPT.keys()), format_func=lambda x: FERTILITY_OPT[x], key="fp")
-        anc         = st.selectbox(T["anc_group"], [0, 1, 2, 9], format_func=lambda x: ANC_OPT[x], key="anc")
-        st.markdown('</div>', unsafe_allow_html=True)
-
-        st.markdown(f'<div class="card"><div class="card-title">{icon("media")} {T["pred_media"]}</div>', unsafe_allow_html=True)
-        r1, r2 = st.columns(2)
-        fieldworker = r1.selectbox(T["fieldworker_fp"], [0, 1, 8], format_func=lambda x: FIELDWKR_OPT[x], key="fw")
-        facility    = r2.selectbox(T["facility_fp"],    [0, 1, 8], format_func=lambda x: FACILITY_OPT[x], key="fac")
-        media       = st.selectbox(T["media_any"],      [0, 1],    format_func=lambda x: MEDIA_OPT[x], key="med")
-        st.markdown('</div>', unsafe_allow_html=True)
-
-        # Predict button
-        st.markdown("<br>", unsafe_allow_html=True)
-        predict_btn = st.button(T["pred_btn"], use_container_width=True, key="pred_btn")
-
-        if predict_btn:
-            vals = {
-                "age": age, "num_children": num_children,
-                "edu_woman": edu_w, "edu_husband": edu_h,
-                "wealth": wealth, "residence": residence,
-                "region": region, "religion": religion,
-                "marital_status": marital_s, "marriage_type": marriage_t,
-                "current_method": current_m, "fertility_preference": fertility_p,
-                "woman_working": woman_w,
-                #   "husband_working": husband_w,
-                "fieldworker_fp": fieldworker, "facility_fp": facility,
-                "media_any": media, "anc_group": anc,
-                "husband_desired_children": 1,
-            }
-            if model is None:
-                st.sidebar.error("❌ Model NOT loaded - using demo values")
-                st.warning(T["no_model_warn"])
-                probabilities = np.array([0.27, 0.16, 0.57])
-                predicted_class = 2
-            else:
-                df_in = build_input_df(vals)
-                try:
-                    predicted_class = int(model.predict(df_in)[0])
-                    probabilities   = model.predict_proba(df_in)[0]
-                except Exception as e:
-                    st.error(f"Prediction error: {e}")
-                    probabilities = np.array([0.33, 0.33, 0.34])
-                    predicted_class = 2
-
-            st.session_state.last_proba  = list(probabilities)
-            st.session_state.last_pred   = predicted_class
-            st.session_state.show_result = True
-            # Scroll to top where results are shown
-            st.markdown("""
-            <script>
-            window.parent.document.querySelector('section.main').scrollTo({top: 0, behavior: 'smooth'});
-            </script>
-            """, unsafe_allow_html=True)
-            st.rerun()
-
-    st.markdown('</div>', unsafe_allow_html=True)
+     
 
 
 # ─── PAGE: PERFORMANCE ────────────────────────────────────────────────────────
@@ -863,22 +915,28 @@ def page_features(T, model):
 
     # Try real importances
     importances, feature_names = None, None
+
     if model is not None:
-        
         try:
-            clf = model.named_steps[list(model.named_steps.keys())[-1]]
-            pre = model.named_steps.get("preprocessor", None)
+            steps = model.named_steps
+
+            # 1. Get classifier safely (LAST step is correct)
+            clf = list(steps.values())[-1]
+
+            # 2. Get preprocessor safely
+            pre = steps.get("preprocess", None) or steps.get("preprocessor", None)
+
+            # 3. Get feature names safely
             if pre is not None and hasattr(pre, "get_feature_names_out"):
-                feature_names = list(pre.get_feature_names_out())
+                feature_names = pre.get_feature_names_out()
+
+            # 4. Get importances (ONLY for tree models)
             if hasattr(clf, "feature_importances_"):
                 importances = clf.feature_importances_
-        except Exception:
-            pass
 
-    if importances is None:
-        feature_names = NUMERICAL_FEATURES + CATEGORICAL_FEATURES
-        importances = np.array([0.148,0.132,0.108,0.097,0.085,0.072,0.068,0.055,0.051,0.040,0.037,0.033,0.030,0.025,0.022,0.018,0.015,0.013])
-
+        except Exception as e:
+            st.warning(f"Feature importance extraction failed: {e}")
+            importances = None
     # Aggregate one-hot back to original names
     orig = {}
     for name, imp in zip(feature_names, importances):
@@ -984,7 +1042,7 @@ def page_about(T):
 
     with col_side:
         # Author card
-        img = get_base64("brenda.jpg")
+        img = get_base64("old/brenda.jpg")
         st.markdown(f"""
         <div class="about-img-wrap" style="height:20rem;">
             <img src="data:image/jpg;base64,{img}" alt="Academic"/>
@@ -1027,7 +1085,7 @@ def page_about(T):
 
 
 # ─── SIDEBAR NAV HACK (real buttons hidden, html nav shown above) ─────────────
-def real_sidebar_nav(T):
+def real_sidebar_nav(T, results):
 
     with st.sidebar:
         # Inject nav CSS once
@@ -1100,11 +1158,11 @@ def real_sidebar_nav(T):
         # ── Footer stats ──────────────────────────────────────────────────────
         st.markdown(f"""
         <div class="sb-stats">
-            <div class="stat-row"><span class="stat-lbl">Best Model</span><span class="stat-val">LightGBM</span></div>
-            <div class="stat-row"><span class="stat-lbl">Accuracy</span><span class="stat-val">57.0%</span></div>
-            <div class="stat-row"><span class="stat-lbl">F1 Score</span><span class="stat-val">0.537</span></div>
+            <div class="stat-row"><span class="stat-lbl">Best Model</span><span class="stat-val">{results['best_model']}</span></div>
+            <div class="stat-row"><span class="stat-lbl">Accuracy</span><span class="stat-val">{results['test_performance']['accuracy']:.1%}</span></div>
+            <div class="stat-row"><span class="stat-lbl">F1 Score</span><span class="stat-val">{results['test_performance']['f1_score']:.3f}</span></div>
             <div class="stat-row"><span class="stat-lbl">Dataset</span><span class="stat-val">DHS Cameroon</span></div>
-            <div class="stat-row" style="margin-bottom:0"><span class="stat-lbl">Samples</span><span class="stat-val">1,454</span></div>
+            <div class="stat-row" style="margin-bottom:0"><span class="stat-lbl">Samples</span><span class="stat-val">{results['sample_size']:,}</span></div>
         </div>
         """, unsafe_allow_html=True)
            
@@ -1137,7 +1195,7 @@ def main():
     model   = load_model()
     results = load_results()
  
-    real_sidebar_nav(T)
+    real_sidebar_nav(T,results)
 
      # Hero
     st.markdown(f"""
