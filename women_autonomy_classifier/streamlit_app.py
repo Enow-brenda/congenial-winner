@@ -607,10 +607,20 @@ def icon(name):
 # ─── LOAD RESOURCES ───────────────────────────────────────────────────────────
 @st.cache_resource
 def load_model():
-    for p in ["best_model.pkl", "model/best_model.pkl",
-              os.path.join(os.path.dirname(__file__), "best_model.pkl")]:
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    
+    paths = [
+        os.path.join(base_dir, "best_model.pkl"),
+        os.path.join(base_dir, "model", "best_model.pkl"),
+        "best_model.pkl",
+        "model/best_model.pkl",
+    ]
+    
+    for p in paths:
         if os.path.exists(p):
             return joblib.load(p)
+    
+    st.error("Model file not found. Please check your deployment.")
     return None
 
 
@@ -994,7 +1004,9 @@ PIPELINE_STEPS = [
 ]
 
 def get_base64(file):
-    with open(file,"rb") as f:
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    full_path = os.path.join(base_dir, file)
+    with open(full_path, "rb") as f:
         return base64.b64encode(f.read()).decode()
 
 def page_about(T):
