@@ -1,9 +1,12 @@
 # ================================================================
 # 1. IMPORTS
 # ================================================================
+import os
+
 import pandas as pd
 import numpy as np
 
+import shap
 from sklearn.model_selection import train_test_split, StratifiedKFold, cross_val_score
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
@@ -24,6 +27,11 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 print("Imports ready")
+
+for root, dirs, files in os.walk("."):
+    for file in files:
+        if "recoded_analysis_data.csv" in file:
+            print(os.path.join(root, file))
 
 df = pd.read_csv('../women_autonomy_regression/outputs/recoded_analysis_data.csv')
 
@@ -82,7 +90,7 @@ models = {
     "Logistic Regression": LogisticRegression(max_iter=1000, class_weight="balanced"),
     "Decision Tree": DecisionTreeClassifier(max_depth=10, class_weight="balanced"),
     "Random Forest": RandomForestClassifier(n_estimators=200, class_weight="balanced"),
-    "XGBoost": XGBClassifier(eval_metric='mlogloss'),
+    "XGBoost": XGBClassifier(eval_metric='mlogloss',class_weight="balanced"),
     "LightGBM": LGBMClassifier(),
     "AdaBoost": AdaBoostClassifier(),
     "SVM": SVC(probability=True, class_weight="balanced")
@@ -114,6 +122,8 @@ for name, model in models.items():
 
     print(f"{name}: {scores.mean():.4f} ± {scores.std():.4f}")
 
+
+
 best_model_name = max(results, key=lambda k: results[k]["mean"])
 print("\nBest model:", best_model_name)
 
@@ -135,11 +145,116 @@ print(classification_report(y_test, y_pred, target_names=le.classes_.astype(str)
 cm = confusion_matrix(y_test, y_pred)
 
 plt.figure(figsize=(6,4))
-sns.heatmap(cm, annot=True, fmt="d")
+sns.heatmap(cm, annot=True, fmt="d",xticklabels=['Woman alone', 'Partner alone', 'Joint decision'],
+            yticklabels=['Woman alone', 'Partner alone', 'Joint decision'])
 plt.title("Confusion Matrix")
 plt.show()
 
 
+# ================================================================
+# SHAP FEATURE IMPORTANCE
+# ================================================================
+
+import shap
+import numpy as np
+import pandas as pd
+
+print("\nGenerating SHAP explanations...")
+
+# Get fitted objects from pipeline
+fitted_preprocessor = final_pipeline.named_steps["preprocess"]
+fitted_model = final_pipeline.named_steps["model"]
+
+feature_names = fitted_preprocessor.get_feature_names_out()
+
+X_test_processed = fitted_preprocessor.transform(X_test)
+
+if hasattr(X_test_processed, "toarray"):
+    X_test_processed = X_test_processed.toarray()
+
+X_explain = X_test_processed[:100]
+
+# ------------------------------------------------
+# LightGBM SHAP
+# ------------------------------------------------
+
+explainer = shap.TreeExplainer(fitted_model)
+
+shap_values = explainer.shap_values(X_explain)
+
+# ------------------------------------------------
+# Handle multiclass output
+# ------------------------------------------------
+
+shap_array = np.array(shap_values)
+
+print("SHAP shape:", shap_array.shape)
+
+if len(shap_array.shape) == 3:
+    # average across classes
+    shap_vals = np.mean(np.abs(shap_array), axis=2)
+
+elif len(shap_array.shape) == 2:
+    shap_vals = np.abs(shap_array)
+
+else:
+    shap_vals = np.abs(shap_array)
+
+# ================================================================
+# BAR PLOT
+# ================================================================
+
+shap.summary_plot(
+    shap_vals,
+    X_explain,
+    feature_names=feature_names,
+    plot_type="bar",
+    max_display=20,
+    show=False
+)
+
+plt.title(f"SHAP Feature Importance - {best_model_name}")
+
+plt.tight_layout()
+plt.savefig("shap_importance.png", dpi=300, bbox_inches="tight")
+plt.show()
+
+# ================================================================
+# BEESWARM
+# ================================================================
+
+shap.summary_plot(
+    shap_vals,
+    X_explain,
+    feature_names=feature_names,
+    max_display=20,
+    show=False
+)
+
+plt.title(f"SHAP Feature Impact - {best_model_name}")
+
+plt.tight_layout()
+plt.savefig("shap_beeswarm.png", dpi=300, bbox_inches="tight")
+plt.show()
+
+# ================================================================
+# TOP FEATURES
+# ================================================================
+
+mean_shap = shap_vals.mean(axis=0)
+
+
+importance_df = pd.DataFrame({
+    "feature": feature_names,
+    "importance": mean_shap
+}).sort_values("importance", ascending=False)
+
+print("\nTop 10 Most Important Features:")
+print(importance_df.head(10).to_string(index=False))
+
+importance_df.to_csv("shap_importance.csv", index=False)
+
+print("\n[SUCCESS] SHAP files saved.")
 # ================================================================
 # SAVE EVERYTHING
 # ================================================================
