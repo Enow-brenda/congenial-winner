@@ -392,7 +392,7 @@ NUMERICAL_FEATURES   = ["age", "num_children"]
 CATEGORICAL_FEATURES = [
     "residence", "edu_woman", "edu_husband", "religion", "region", "marital_status",
     "wealth", "marriage_type", "woman_working", "husband_working", "fertility_preference",
-    "current_method", "husband_desired_children",
+    "husband_desired_children",
     "anc_group", "fieldworker_fp", "facility_fp", "media_any",
 ]
 
@@ -737,7 +737,7 @@ def build_input_df(vals, model=None):
     cat_cols = [
         "residence", "edu_woman", "edu_husband", "religion", "region", "marital_status",
         "wealth", "marriage_type", "woman_working", "husband_working", "fertility_preference",
-        "current_method", "husband_desired_children",
+         "husband_desired_children",
         "anc_group", "fieldworker_fp", "facility_fp", "media_any"
     ]
     
@@ -800,10 +800,10 @@ def page_predict(T, model):
     with col2:
         st.markdown(f'<div class="card"><div class="card-title">{icon("heart")} {T["pred_fp"]}</div>', unsafe_allow_html=True)
         r1, r2 = st.columns(2)
-        current_m   = r1.selectbox(T["current_method"],      [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20],    format_func=lambda x: T["CURRENT_METHOD_OPT"][x], key="cm")
-        fertility_p = r2.selectbox(T["fertility_preference"], list(T["FERTILITY_OPT"].keys()), format_func=lambda x: T["FERTILITY_OPT"][x], key="fp")
-        anc         = r1.selectbox(T["anc_group"], [0, 1, 2, 9], format_func=lambda x: T["ANC_OPT"][x], key="anc")
-        husband_desired = r2.selectbox(T["husband_desired_children"], list(T["HUSBAND_DESIRED"].keys()), format_func=lambda x: T["HUSBAND_DESIRED"][x], key="hd")
+        
+        fertility_p = r1.selectbox(T["fertility_preference"], list(T["FERTILITY_OPT"].keys()), format_func=lambda x: T["FERTILITY_OPT"][x], key="fp")
+        anc         = r2.selectbox(T["anc_group"], [0, 1, 2, 9], format_func=lambda x: T["ANC_OPT"][x], key="anc")
+        husband_desired = st.selectbox(T["husband_desired_children"], list(T["HUSBAND_DESIRED"].keys()), format_func=lambda x: T["HUSBAND_DESIRED"][x], key="hd")
         st.markdown('</div>', unsafe_allow_html=True)
 
         st.markdown(f'<div class="card"><div class="card-title">{icon("media")} {T["pred_media"]}</div>', unsafe_allow_html=True)
@@ -824,7 +824,7 @@ def page_predict(T, model):
                 "wealth": wealth, "residence": residence,
                 "region": region, "religion": religion,
                 "marital_status": marital_s, "marriage_type": marriage_t,
-                "current_method": current_m, "fertility_preference": fertility_p,
+                 "fertility_preference": fertility_p,
                 "woman_working": woman_w,
                 "husband_working": husband_w,
                 "fieldworker_fp": fieldworker, "facility_fp": facility,
@@ -1009,6 +1009,18 @@ def page_performance(T, results):
     """, unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
+def getShapImportance(isImportance=False):
+    shap_data = pd.read_csv("shap_importance.csv")
+    # Extract original feature name
+    shap_data['original_feature'] = shap_data['feature'].apply(lambda x: x.split('__')[1].rsplit('_', 1)[0] if '__' in x else x)
+    
+    if not isImportance:
+        return shap_data.sort_values('importance', ascending=False)[['feature', 'importance']]
+
+    # Sum importance for each original feature
+    grouped = shap_data.groupby('original_feature')['importance'].sum().sort_values(ascending=False)
+    return grouped
+
 
 # ─── PAGE: FEATURES ───────────────────────────────────────────────────────────
 def page_features(T, model):
@@ -1059,6 +1071,54 @@ def page_features(T, model):
 
     n = len(names_s)
     bar_colors = ["#f97316" if i < 3 else "#fb923c" if i < 7 else "#2a2f42" for i in range(n)]
+
+    # Get SHAP importances
+    shap_grouped = getShapImportance(isImportance=True)
+    shap_raw = getShapImportance(isImportance=False)
+
+    # If SHAP returned grouped features, use those
+    if isinstance(shap_grouped, pd.Series) and len(shap_grouped) > 0:
+        names_s = shap_grouped.index.tolist()
+        vals_s = shap_grouped.values.tolist()
+    else:
+        # Fallback: use model's built-in feature_importances_
+        if model is not None:
+            try:
+                steps = model.named_steps
+                clf = list(steps.values())[-1]
+                pre = steps.get("preprocess", None) or steps.get("preprocessor", None)
+                
+                if pre is not None and hasattr(pre, "get_feature_names_out"):
+                    feature_names = pre.get_feature_names_out()
+                
+                if hasattr(clf, "feature_importances_"):
+                    importances = clf.feature_importances_
+                
+                # Aggregate one-hot back to original names
+                orig = {}
+                for name, imp in zip(feature_names, importances):
+                    clean = name.split("__")[-1]
+                    matched = False
+                    for f in NUMERICAL_FEATURES + CATEGORICAL_FEATURES:
+                        if clean.startswith(f):
+                            orig[f] = orig.get(f, 0) + imp
+                            matched = True
+                            break
+                    if not matched:
+                        orig[clean] = orig.get(clean, 0) + imp
+                
+                names_s = sorted(orig, key=orig.get, reverse=True)
+                vals_s = [orig[n] for n in names_s]
+            except Exception as e:
+                st.warning(f"Feature importance extraction failed: {e}")
+                names_s, vals_s = [], []
+        else:
+            names_s, vals_s = [], []
+
+    # Continue with plotting
+    total = sum(vals_s) or 1
+    vals_n = [v / total * 100 for v in vals_s]
+    # ... rest of your plotting code
 
     fig = go.Figure(go.Bar(
         y=names_s[::-1], x=vals_n[::-1],

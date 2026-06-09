@@ -52,7 +52,7 @@ TARGET = 'fp_decision_autonomy'
 CATEGORICAL_FEATURES = [
     'residence','edu_woman','edu_husband','religion','region',
     'marital_status','wealth','marriage_type',
-    'woman_working','fertility_preference','current_method',
+    'woman_working','fertility_preference',
     'husband_working','husband_desired_children','anc_group',
     'fieldworker_fp','facility_fp','media_any'
 ]
