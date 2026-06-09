@@ -1,4 +1,6 @@
 
+from pathlib import Path
+
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -1010,6 +1012,9 @@ def page_performance(T, results):
     st.markdown('</div>', unsafe_allow_html=True)
 
 def getShapImportance(isImportance=False):
+    BASE_DIR = Path(__file__).parent
+
+    shap_file = BASE_DIR / "shap_importance.csv"
     shap_data = pd.read_csv("shap_importance.csv")
     # Extract original feature name
     shap_data['original_feature'] = shap_data['feature'].apply(lambda x: x.split('__')[1].rsplit('_', 1)[0] if '__' in x else x)
