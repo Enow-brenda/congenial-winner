@@ -105,6 +105,7 @@ TRANSLATIONS = {
         "pred_confidence": "Confidence",
         "pred_hero_title": "Women's Autonomy in Family Planning",
         "pred_hero_sub": "A machine learning study using DHS Cameroon data",
+        "pred_hero_sub2": "Authors: Enow, Ebanga, Bela, Kaye, Kum Collins, Georges Nguefack-Tsague",
         "age": "Age (years)",
         "num_children": "Number of Children",
         "edu_woman": "Woman's Education Level",
@@ -237,6 +238,7 @@ TRANSLATIONS = {
         "pred_confidence": "Confiance",
         "pred_hero_title": "Autonomie des Femmes en Planification Familiale",
         "pred_hero_sub": "Une étude en apprentissage automatique sur les données EDS Cameroun",
+        "pred_hero_sub2": "Auteurs: Enow, Ebanga, Bela, Kaye, Kum Collins, Georges Nguefack-Tsague",
         "age": "Âge (années)",
         "num_children": "Nombre d'enfants",
         "edu_woman": "Niveau d'éducation de la femme",
@@ -1481,6 +1483,7 @@ def main():
             <div class="hero-badge">{icon("heart")} DHS Cameroon · LightGBM</div>
             <h1>{T['pred_hero_title']}</h1>
             <p>{T['pred_hero_sub']}</p>
+            <p>{T['pred_hero_sub2']}</p>
         </div>
     </div>
     """, unsafe_allow_html=True)
