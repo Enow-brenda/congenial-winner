@@ -159,9 +159,13 @@ TRANSLATIONS = {
         "about_docs": "Full Report / Documentation",
         "about_dhs": "DHS Program (Data Source)",
         "about_author_title": "Author & Institution",
+        "about_team_title": "Authors",
         "about_institution": "Institution",
         "about_supervisor": "Supervisor",
         "about_year": "Academic Year",
+        "role_supervisor": "Supervisor",
+        "role_principal_investigator": "Principal Investigator",
+        "role_data_scientist": "Data Scientist",
         "about_pipeline": "ML Pipeline",
         "husband_desired_children": "Husband Desired Preference for Children",
         "about_disclaimer": (
@@ -286,9 +290,13 @@ TRANSLATIONS = {
         "about_docs": "Rapport / Documentation",
         "about_dhs": "Programme DHS (Source des données)",
         "about_author_title": "Auteur & Institution",
+        "about_team_title": "Auteurs",
         "about_institution": "Institution",
         "about_supervisor": "Directeur de mémoire",
         "about_year": "Année Académique",
+        "role_supervisor": "Directeur de mémoire",
+        "role_principal_investigator": "Investigateur principal",
+        "role_data_scientist": "Data Scientist",
         "about_pipeline": "Pipeline ML",
         "husband_desired_children": "Préférence du mari pour les enfants",
         "about_disclaimer": (
@@ -667,6 +675,43 @@ MainMenu { visibility: hidden; }
 footer    { visibility: hidden; }
 # header    { visibility: hidden; }
 # [data-testid="stToolbar"] { display: none; }
+
+/* ── author team grid ─────────────────────────────── */
+.author-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 0.4rem;
+}
+@media (max-width: 900px) { .author-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 540px) { .author-grid { grid-template-columns: 1fr; } }
+.author-card {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 14px; padding: 1.4rem 1rem;
+  text-align: center; display: flex; flex-direction: column;
+  align-items: center; gap: 5px; transition: border-color 0.2s;
+}
+.author-card:hover { border-color: var(--border2); }
+.author-avatar {
+  width: 72px; height: 72px; border-radius: 50%;
+  overflow: hidden; flex-shrink: 0;
+  border: 2px solid var(--border2);
+}
+.author-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.author-init {
+  width: 100%; height: 100%; display: flex; align-items: center;
+  justify-content: center; font-family: var(--mono);
+  font-size: 1.4rem; font-weight: 600; color: #fff; letter-spacing: 0.02em;
+}
+.author-name { font-size: 0.82rem; font-weight: 600; color: var(--text); text-align: center; line-height: 1.35; }
+.role-badge {
+  padding: 3px 10px; border-radius: 99px; font-size: 0.64rem;
+  font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+  display: inline-flex; align-items: center; gap: 5px;
+}
+.role-supervisor  { color: #f97316; background: rgba(249,115,22,0.12); border: 1px solid rgba(249,115,22,0.35); }
+.role-pi          { color: #60a5fa; background: rgba(96,165,250,0.12); border: 1px solid rgba(96,165,250,0.35); }
+.role-ds          { color: #a78bfa; background: rgba(167,139,250,0.12); border: 1px solid rgba(167,139,250,0.35); }
 </style>
 """, unsafe_allow_html=True)
 
@@ -1165,6 +1210,86 @@ def get_base64(file):
     with open(full_path, "rb") as f:
         return base64.b64encode(f.read()).decode()
 
+
+def load_authors():
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    path = os.path.join(base_dir, "authors.json")
+    if not os.path.exists(path):
+        return []
+    with open(path, "r", encoding="utf-8") as f:
+        return json.load(f).get("authors", [])
+
+
+def _initials(name):
+    parts = [p for p in name.strip().split() if p]
+    if not parts:
+        return "A"
+    first = parts[0][0].upper()
+    last = parts[-1][0].upper() if len(parts) > 1 else ""
+    return first + last
+
+
+def _avatar_gradient(name):
+    palettes = [
+        ("#b45309", "#f97316"),
+        ("#0e7490", "#22d3ee"),
+        ("#1d4ed8", "#60a5fa"),
+        ("#7e22ce", "#a78bfa"),
+        ("#047857", "#34d399"),
+        ("#be123c", "#fb7185"),
+    ]
+    idx = sum(ord(c) for c in name) % len(palettes)
+    return palettes[idx]
+
+
+def author_avatar_html(name, photo):
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    if photo:
+        full = os.path.join(base_dir, photo)
+        if os.path.exists(full):
+            img = get_base64(photo)
+            return f'<img src="data:image/jpg;base64,{img}" alt="{name}"/>'
+    c1, c2 = _avatar_gradient(name)
+    return f'<div class="author-init" style="background:linear-gradient(135deg,{c1},{c2});">{_initials(name)}</div>'
+
+
+def render_authors(T):
+    authors = load_authors()
+    if not authors:
+        return
+    role_css_map = {
+        "supervisor": "role-supervisor",
+        "principal_investigator": "role-pi",
+        "data_scientist": "role-ds",
+    }
+    role_key_map = {
+        "supervisor": "role_supervisor",
+        "principal_investigator": "role_principal_investigator",
+        "data_scientist": "role_data_scientist",
+    }
+    cards = []
+    for a in authors:
+        role = a.get("role", "data_scientist")
+        role_css = role_css_map.get(role, "role-ds")
+        role_lbl = T.get(role_key_map.get(role, "role_data_scientist"), "")
+        avatar = author_avatar_html(a.get("name", ""), a.get("photo"))
+        cards.append(
+            f'<div class="author-card">'
+            f'<div class="author-avatar">{avatar}</div>'
+            f'<div class="author-name">{a.get("name", "")}</div>'
+            f'<div class="role-badge {role_css}">{role_lbl}</div>'
+            f'</div>'
+        )
+    row = "".join(cards)
+    st.markdown(
+        f'<div class="card">'
+        f'<div class="card-title">{icon("user")} {T["about_team_title"]}</div>'
+        f'<div class="author-grid">{row}</div>'
+        f'</div>',
+        unsafe_allow_html=True,
+    )
+
+
 def page_about(T):
     st.markdown('<div class="page-wrap">', unsafe_allow_html=True)
     st.markdown(f'<div class="sec-head"><h2>{T["about_title"]}</h2></div>', unsafe_allow_html=True)
@@ -1194,41 +1319,7 @@ def page_about(T):
         """, unsafe_allow_html=True)
         st.markdown('</div>', unsafe_allow_html=True)
 
-             # Links
-        st.markdown(f'<div class="card"><div class="card-title">{icon("link")} {T["about_links"]}</div>', unsafe_allow_html=True)
-        for lbl, url in [
-            (T["about_github"], "https://github.com/Enow-brenda/congenial-winner"),
-            (T["about_docs"],   "https://github.com/Enow-brenda/congenial-winner/raw/refs/heads/main/Womens_Decisional_Autonomy_Research_Report.docx"),
-            (T["about_dhs"],    "https://dhsprogram.com/"),
-        ]:
-            st.markdown(f'<a class="link-item" href="{url}" target="_blank">{icon("external")} {lbl}</a>', unsafe_allow_html=True)
-        
-        st.markdown(f'<div class="disclaimer">{icon("alert")} {T["about_disclaimer"]}</div>', unsafe_allow_html=True)
-        st.markdown('</div>', unsafe_allow_html=True)
-
-        
-
     with col_side:
-        # Author card
-        img = get_base64("old/brenda.jpg")
-        st.markdown(f"""
-        <div class="about-img-wrap" style="height:20rem;">
-            <img src="data:image/jpg;base64,{img}" alt="Academic"/>
-        </div>
-        """, unsafe_allow_html=True)
-
-        st.markdown(f'<div class="card"><div class="card-title">{icon("user")} {T["about_author_title"]}</div>', unsafe_allow_html=True)
-        for label, val in [
-            ("Name", "ENOW EWEH MAC BRENDA"),
-            (T["about_institution"], "INSTITUT SAINT JEAN"),
-            # (T["about_supervisor"], "[Supervisor Name]"),
-            ("Programme", "MASTER IN DATA SCIENCE"),
-            (T["about_year"], "2025 – 2026"),
-        ]:
-            st.markdown(f'<div style="display:flex;justify-content:space-between;padding:0.35rem 0;border-bottom:1px solid var(--border);font-size:0.8rem;"><span style="color:var(--sub)">{label}</span><span style="font-weight:500;color:var(--text)">{val}</span></div>', unsafe_allow_html=True)
-        st.markdown('</div>', unsafe_allow_html=True)
-
-   
 
         # Pipeline
         st.markdown(f'<div class="card"><div class="card-title">{icon("cpu")} {T["about_pipeline"]}</div><div class="pipeline-steps">', unsafe_allow_html=True)
@@ -1248,6 +1339,20 @@ def page_about(T):
             </div>
             """, unsafe_allow_html=True)
         st.markdown('</div></div></div>', unsafe_allow_html=True)
+
+        # Links
+        st.markdown(f'<div class="card"><div class="card-title">{icon("link")} {T["about_links"]}</div>', unsafe_allow_html=True)
+        for lbl, url in [
+            (T["about_github"], "https://github.com/Enow-brenda/congenial-winner"),
+            (T["about_docs"],   "https://github.com/Enow-brenda/congenial-winner/raw/refs/heads/main/Womens_Decisional_Autonomy_Research_Report.docx"),
+            (T["about_dhs"],    "https://dhsprogram.com/"),
+        ]:
+            st.markdown(f'<a class="link-item" href="{url}" target="_blank">{icon("external")} {lbl}</a>', unsafe_allow_html=True)
+
+        st.markdown(f'<div class="disclaimer">{icon("alert")} {T["about_disclaimer"]}</div>', unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    render_authors(T)
 
     st.markdown('</div>', unsafe_allow_html=True)
 

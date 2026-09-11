@@ -1,6 +1,4 @@
-# ================================================================
-# 1. IMPORTS
-# ================================================================
+# imports 
 import os
 
 import pandas as pd
@@ -12,6 +10,8 @@ from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler, LabelEncoder
 from sklearn.impute import SimpleImputer
+
+from sklearn.model_selection import learning_curve
 
 from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
@@ -86,14 +86,15 @@ preprocessor = ColumnTransformer([
     ("cat", categorical_transformer, CATEGORICAL_FEATURES)
 ])
 
+
 models = {
-    "Logistic Regression": LogisticRegression(max_iter=1000, class_weight="balanced"),
-    "Decision Tree": DecisionTreeClassifier(max_depth=10, class_weight="balanced"),
-    "Random Forest": RandomForestClassifier(n_estimators=200, class_weight="balanced"),
-    "XGBoost": XGBClassifier(eval_metric='mlogloss',class_weight="balanced"),
-    "LightGBM": LGBMClassifier(),
-    "AdaBoost": AdaBoostClassifier(),
-    "SVM": SVC(probability=True, class_weight="balanced")
+    "Logistic Regression": LogisticRegression(max_iter=1000, class_weight="balanced", random_state=42),
+    "Decision Tree": DecisionTreeClassifier(max_depth=10, class_weight="balanced",random_state=42),
+    "Random Forest": RandomForestClassifier(n_estimators=200, class_weight="balanced",random_state=42),
+    "XGBoost": XGBClassifier(eval_metric='mlogloss',random_state=42),
+    "LightGBM": LGBMClassifier(random_state=42),
+    "AdaBoost": AdaBoostClassifier(random_state=42),
+    "SVM": SVC(probability=True, class_weight="balanced",random_state=42)
 }
 
 cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
@@ -134,7 +135,64 @@ final_pipeline = Pipeline([
     ("model", best_model)
 ])
 
-final_pipeline.fit(X_train, y_train)
+final_pipeline.fit(X_train, y_train )
+
+train_sizes, train_scores, validation_scores = learning_curve(
+    estimator=final_pipeline,
+    X=X_train,
+    y=y_train,
+    cv=cv,
+    scoring='f1_weighted',
+    n_jobs=-1,
+    train_sizes=np.linspace(0.1, 1.0, 10)
+)
+
+# computing averages
+train_mean = train_scores.mean(axis=1)
+train_std = train_scores.std(axis=1)
+
+val_mean = validation_scores.mean(axis=1)
+val_std = validation_scores.std(axis=1)
+
+# plotting now 
+plt.figure(figsize=(8,6))
+
+plt.plot(
+    train_sizes,
+    train_mean,
+    marker='o',
+    label='Training F1'
+)
+
+plt.plot(
+    train_sizes,
+    val_mean,
+    marker='o',
+    label='Validation F1'
+)
+
+plt.fill_between(
+    train_sizes,
+    train_mean-train_std,
+    train_mean+train_std,
+    alpha=0.15
+)
+
+plt.fill_between(
+    train_sizes,
+    val_mean-val_std,
+    val_mean+val_std,
+    alpha=0.15
+)
+
+plt.xlabel("Training Samples")
+plt.ylabel("Weighted F1 Score")
+plt.title(f"Learning Curve - {best_model_name}")
+plt.legend()
+plt.grid(True)
+
+plt.savefig("learning_curve.png", dpi=300 , bbox_inches="tight")
+plt.show()
 
 y_pred = final_pipeline.predict(X_test)
 

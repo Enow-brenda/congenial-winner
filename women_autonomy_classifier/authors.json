@@ -1,0 +1,51 @@
+{
+  "authors": [
+    {
+      "name": "Prof. NGUEFACK TSAGUE GEORGE",
+      "role": "supervisor",
+      "institution": "INSTITUT SAINT JEAN",
+      "programme": "Research Supervision",
+      "photo": null
+    },
+    {
+      "name": "BUH KUM COLLINS",
+      "role": "principal_investigator",
+      "institution": "INSTITUT SAINT JEAN",
+      "programme": "MASTER IN DATA SCIENCE",
+      "year": "2025 – 2026",
+      "photo": null
+    },
+    {
+      "name": "ENOW EWEH MAC BRENDA",
+      "role": "data_scientist",
+      "institution": "INSTITUT SAINT JEAN",
+      "programme": "MASTER IN DATA SCIENCE",
+      "year": "2025 – 2026",
+      "photo": "old/brenda.jpg"
+    },
+    {
+      "name": "BELLA MBARGA",
+      "role": "data_scientist",
+      "institution": "INSTITUT SAINT JEAN",
+      "programme": "MASTER IN DATA SCIENCE",
+      "year": "2025 – 2026",
+      "photo": null
+    },
+    {
+      "name": "EBANGA MBALLA",
+      "role": "data_scientist",
+      "institution": "INSTITUT SAINT JEAN",
+      "programme": "MASTER IN DATA SCIENCE",
+      "year": "2025 – 2026",
+      "photo": null
+    },
+    {
+      "name": "KAYE SIAGAM",
+      "role": "data_scientist",
+      "institution": "INSTITUT SAINT JEAN",
+      "programme": "MASTER IN DATA SCIENCE",
+      "year": "2025 – 2026",
+      "photo": null
+    }
+  ]
+}
