@@ -510,6 +510,7 @@ html, body, [class*="css"], .stApp { background-color: var(--bg); font-family: v
 .sb-stats .stat-row { display: flex; justify-content: space-between; margin-bottom: 6px; }
 .sb-stats .stat-lbl { font-size: 0.71rem; color: var(--sub); }
 .sb-stats .stat-val { font-size: 0.71rem; font-weight: 600; color: var(--orange); font-family: var(--mono); }
+.sb-stats .stat-authors { font-family: var(--font); font-weight: 500; color: var(--sub); text-align: right; max-width: 58%; line-height: 1.25; }
 
 /* ── main area ───────────────────────────────────────── */
 .block-container { padding: 0rem 1rem !important; margin: 0rem !important; }
@@ -1429,13 +1430,15 @@ def real_sidebar_nav(T, results):
         # st.markdown('</div>', unsafe_allow_html=True)
  
         # ── Footer stats ──────────────────────────────────────────────────────
+        author_names = ", ".join(a["name"].split()[-1] for a in load_authors())
         st.markdown(f"""
         <div class="sb-stats">
             <div class="stat-row"><span class="stat-lbl">Best Model</span><span class="stat-val">{results['best_model']}</span></div>
             <div class="stat-row"><span class="stat-lbl">Accuracy</span><span class="stat-val">{results['test_performance']['accuracy']:.1%}</span></div>
             <div class="stat-row"><span class="stat-lbl">F1 Score</span><span class="stat-val">{results['test_performance']['f1_score']:.3f}</span></div>
             <div class="stat-row"><span class="stat-lbl">Dataset</span><span class="stat-val">DHS Cameroon</span></div>
-            <div class="stat-row" style="margin-bottom:0"><span class="stat-lbl">Samples</span><span class="stat-val">{results['sample_size']:,}</span></div>
+            <div class="stat-row"><span class="stat-lbl">Samples</span><span class="stat-val">{results['sample_size']:,}</span></div>
+            <div class="stat-row" style="margin-bottom:0"><span class="stat-lbl">Authors</span><span class="stat-val stat-authors">Enow, Ebanga, Bella, Kaye, Kum Collins, Georges Nguefack-Tsague</span></div>
         </div>
         """, unsafe_allow_html=True)
            
